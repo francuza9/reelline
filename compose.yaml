@@ -1,0 +1,20 @@
+# One channel's daily run: `reelline tick` every TICK_INTERVAL_S seconds (the loop the systemd timer is on a
+# server) for the channel folder mounted at /channel. Its .env (the credentials) is in that folder.
+#
+#   CHANNEL_DIR=./channels/example docker compose up --build
+#   docker compose run --rm reelline doctor          # validate the config and the credentials first
+services:
+  reelline:
+    build: .
+    image: reelline
+    environment:
+      REELLINE_CHANNEL: /channel
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${CHANNEL_DIR:-./channels/example}:/channel   # config.yaml, prompts, sources, assets, .env and the state (data/, content/)
+      - reelline-out:/app/out                           # renders, logs and Remotion's scratch space
+    entrypoint: ["sh", "-c", "while true; do reelline tick; sleep $${TICK_INTERVAL_S:-300}; done"]
+    restart: unless-stopped
+
+volumes:
+  reelline-out:

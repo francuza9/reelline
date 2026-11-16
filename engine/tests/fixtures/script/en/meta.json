@@ -1,0 +1,17 @@
+{
+  "joke_1": "You cannot even check your card balance yet.",
+  "joke_2": "I would win this blindfolded.",
+  "caption": {
+    "hook": "You cannot win this. I already did.",
+    "youtube_title": "Student contest: 20,000 lari prize",
+    "hashtags": ["#GITA", "#students", "#fintech"]
+  },
+  "card": {
+    "name": "The student competition",
+    "what": "Fintech ideas and a 20,000 lari grant",
+    "who": "Students aged 17 and older",
+    "deadline": null,
+    "cost": null,
+    "apply": null
+  }
+}

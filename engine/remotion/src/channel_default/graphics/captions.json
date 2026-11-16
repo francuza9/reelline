@@ -1,0 +1,13 @@
+{
+ "note": "The caption fonts: fontFamily is the CSS stack, fonts the faces the render's public dir has under fonts/ (render config channel.fonts stages them). `sample` is a letter the face must draw (checked on load).",
+ "fontFamily": "Fredoka, sans-serif",
+ "fonts": [
+  {
+   "family": "Fredoka",
+   "file": "fonts/Fredoka-Variable.ttf",
+   "weight": "300 700",
+   "sample": "A",
+   "sizeAdjust": "100%"
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Example News</title>
+    <link>https://news.example.ge/</link>
+    <description>Test feed</description>
+    <item>
+      <title>Fresh story</title>
+      <link>https://news.example.ge/a/1/?utm_source=rss&amp;utm_medium=feed</link>
+      <pubDate>Tue, 29 Sep 2026 10:00:00 +0400</pubDate>
+      <description>Short teaser.</description>
+    </item>
+    <item>
+      <title>Second fresh story</title>
+      <link>/a/2</link>
+      <pubDate>Wed, 30 Sep 2026 08:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<p>First paragraph of the full text.</p><p>Second <b>paragraph</b>.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>Old story</title>
+      <link>https://news.example.ge/a/3</link>
+      <pubDate>Fri, 18 Sep 2026 09:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Undated story</title>
+      <link>https://news.example.ge/a/4#comments</link>
+    </item>
+    <item>
+      <title>No link</title>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,16 @@
+{
+	"note": "How the reel's MP4 is encoded (remotion/remotion.config.ts sets it; pipeline/qa.py checks the result). Remotion writes the final file itself: frames, the mixed audio (AAC, Remotion's default 320 kbps) and the faststart pass in one go, no ffmpeg step after it. Frames are captured as JPEG at quality 95 (jpegQuality, used only with imageFormat jpeg; the default 80 put blocks and color bleed around the outlines and caption text). On prod it renders reel 43 in about 212 s of Remotion, against 384 s for PNG, and uses less memory on the shared slice; at 2x the crops look practically the same. Set imageFormat to png for lossless frames (cleaner along the outlines, ~3 GB of frames on disk, slower). The frames go to disk (scripts/render_reel.py REMOTION_TMP). colorSpace bt709 converts them to limited (TV) range and tags the stream bt709/tv (Remotion's default left yuvj420p, full range, BT.601). A target bitrate (x264 ABR, -b:v, capped by -maxrate/-bufsize), not a CRF: the platforms re-encode, so they get a heavy source, about 90 MB for 60 s. On clean frames a CRF lands far below 10-15 Mbps: reel 43 (57.7 s) measured 2.3 Mbps at CRF 18, 3.0 at 16, 5.1 at 12, 15 at 1 (it was 3.7 at CRF 18 on JPEG frames, most of it artifacts).",
+	"imageFormat": "jpeg",
+	"jpegQuality": 95,
+	"codec": "h264",
+	"videoBitrate": "12M",
+	"encodingMaxRate": "20M",
+	"encodingBufferSize": "40M",
+	"x264Preset": "medium",
+	"pixelFormat": "yuv420p",
+	"colorSpace": "bt709",
+	"qa": {
+		"note": "QA warns below minVideoMbps (the video stream alone) and on any other pixel format or color tags than these.",
+		"minVideoMbps": 8.0
+	}
+}

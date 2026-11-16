@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>NASA news releases</title><link>https://www.nasa.gov/</link><description>fixture</description>
+<item><title>Rover finds rock layers that formed in an ancient lake</title>
+<link>https://www.nasa.gov/news-release/rover-finds-lake-layers/</link>
+<guid isPermaLink="true">https://www.nasa.gov/news-release/rover-finds-lake-layers/</guid>
+<pubDate>{{PUBDATE}}</pubDate>
+<description>NASA's Perseverance rover found 20 distinct rock layers at the edge of Jezero crater.</description></item>
+</channel></rss>

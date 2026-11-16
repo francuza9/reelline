@@ -1,0 +1,998 @@
+{
+ "note": "Where abroad's plane flies: [longitude, latitude] of each country's capital, keyed by its English name (the name a script would use), plus Europe. Capitals from Natural Earth's 1:10m populated places (public domain, naturalearthdata.com). `aliases` maps other spellings to a key.",
+ "places": {
+  "Europe": [
+   10.0,
+   50.5
+  ],
+  "Australia": [
+   149.13,
+   -35.28
+  ],
+  "Austria": [
+   16.36,
+   48.2
+  ],
+  "Afghanistan": [
+   69.18,
+   34.52
+  ],
+  "Azerbaijan": [
+   49.86,
+   40.4
+  ],
+  "Albania": [
+   19.82,
+   41.33
+  ],
+  "Algeria": [
+   3.05,
+   36.77
+  ],
+  "Angola": [
+   13.23,
+   -8.84
+  ],
+  "Andorra": [
+   1.52,
+   42.5
+  ],
+  "Antigua and Barbuda": [
+   -61.85,
+   17.12
+  ],
+  "United Arab Emirates": [
+   54.37,
+   24.47
+  ],
+  "Argentina": [
+   -58.4,
+   -34.6
+  ],
+  "Timor-Leste": [
+   125.58,
+   -8.56
+  ],
+  "United States": [
+   -77.01,
+   38.9
+  ],
+  "New Zealand": [
+   174.78,
+   -41.3
+  ],
+  "Bangladesh": [
+   90.41,
+   23.73
+  ],
+  "Barbados": [
+   -59.62,
+   13.1
+  ],
+  "Bahamas": [
+   -77.35,
+   25.08
+  ],
+  "Bahrain": [
+   50.58,
+   26.24
+  ],
+  "Belarus": [
+   27.56,
+   53.9
+  ],
+  "Belgium": [
+   4.33,
+   50.84
+  ],
+  "Belize": [
+   -88.77,
+   17.25
+  ],
+  "Benin": [
+   2.62,
+   6.48
+  ],
+  "Bolivia": [
+   -65.26,
+   -19.04
+  ],
+  "Bosnia and Herzegovina": [
+   18.38,
+   43.85
+  ],
+  "Botswana": [
+   25.91,
+   -24.65
+  ],
+  "Brazil": [
+   -47.92,
+   -15.78
+  ],
+  "Brunei": [
+   114.93,
+   4.88
+  ],
+  "Bulgaria": [
+   23.31,
+   42.69
+  ],
+  "Burkina Faso": [
+   -1.53,
+   12.37
+  ],
+  "Burundi": [
+   29.84,
+   -3.43
+  ],
+  "Bhutan": [
+   89.64,
+   27.47
+  ],
+  "Gabon": [
+   9.46,
+   0.39
+  ],
+  "Guyana": [
+   -58.17,
+   6.8
+  ],
+  "Gambia": [
+   -16.59,
+   13.45
+  ],
+  "Ghana": [
+   -0.22,
+   5.55
+  ],
+  "Germany": [
+   13.4,
+   52.52
+  ],
+  "Guatemala": [
+   -90.53,
+   14.62
+  ],
+  "Guinea": [
+   -13.68,
+   9.53
+  ],
+  "Guinea-Bissau": [
+   -15.6,
+   11.87
+  ],
+  "Grenada": [
+   -61.74,
+   12.05
+  ],
+  "Denmark": [
+   12.56,
+   55.68
+  ],
+  "United Kingdom": [
+   -0.12,
+   51.5
+  ],
+  "Dominica": [
+   -61.39,
+   15.3
+  ],
+  "Dominican Republic": [
+   -69.9,
+   18.47
+  ],
+  "Egypt": [
+   31.25,
+   30.05
+  ],
+  "Ethiopia": [
+   38.7,
+   9.04
+  ],
+  "Ecuador": [
+   -78.5,
+   -0.21
+  ],
+  "Equatorial Guinea": [
+   8.78,
+   3.75
+  ],
+  "Iraq": [
+   44.39,
+   33.34
+  ],
+  "Eritrea": [
+   38.93,
+   15.33
+  ],
+  "Eswatini": [
+   31.13,
+   -26.32
+  ],
+  "Spain": [
+   -3.69,
+   40.4
+  ],
+  "Estonia": [
+   24.73,
+   59.43
+  ],
+  "Vanuatu": [
+   168.32,
+   -17.73
+  ],
+  "Vatican City": [
+   12.45,
+   41.9
+  ],
+  "Venezuela": [
+   -66.92,
+   10.5
+  ],
+  "Vietnam": [
+   105.85,
+   21.04
+  ],
+  "Zambia": [
+   28.28,
+   -15.41
+  ],
+  "Zimbabwe": [
+   31.04,
+   -17.82
+  ],
+  "Turkey": [
+   32.86,
+   39.93
+  ],
+  "Turkmenistan": [
+   58.38,
+   37.95
+  ],
+  "Jamaica": [
+   -76.77,
+   17.98
+  ],
+  "Japan": [
+   139.75,
+   35.69
+  ],
+  "Yemen": [
+   44.2,
+   15.36
+  ],
+  "India": [
+   77.2,
+   28.6
+  ],
+  "Indonesia": [
+   106.83,
+   -6.17
+  ],
+  "Jordan": [
+   35.93,
+   31.95
+  ],
+  "Iran": [
+   51.42,
+   35.67
+  ],
+  "Ireland": [
+   -6.25,
+   53.34
+  ],
+  "Iceland": [
+   -21.95,
+   64.15
+  ],
+  "Israel": [
+   35.21,
+   31.78
+  ],
+  "Italy": [
+   12.48,
+   41.9
+  ],
+  "Cabo Verde": [
+   -23.52,
+   14.92
+  ],
+  "Cambodia": [
+   104.91,
+   11.55
+  ],
+  "Cameroon": [
+   11.51,
+   3.87
+  ],
+  "Canada": [
+   -75.7,
+   45.42
+  ],
+  "Qatar": [
+   51.53,
+   25.29
+  ],
+  "Kenya": [
+   36.81,
+   -1.28
+  ],
+  "Cyprus": [
+   33.37,
+   35.17
+  ],
+  "Kiribati": [
+   173.02,
+   1.34
+  ],
+  "Colombia": [
+   -74.09,
+   4.6
+  ],
+  "Comoros": [
+   43.24,
+   -11.7
+  ],
+  "Republic of the Congo": [
+   15.28,
+   -4.26
+  ],
+  "DR Congo": [
+   15.31,
+   -4.33
+  ],
+  "South Korea": [
+   127.0,
+   37.57
+  ],
+  "Kosovo": [
+   21.17,
+   42.67
+  ],
+  "Costa Rica": [
+   -84.09,
+   9.94
+  ],
+  "Côte d'Ivoire": [
+   -5.28,
+   6.82
+  ],
+  "Cuba": [
+   -82.37,
+   23.13
+  ],
+  "Laos": [
+   102.6,
+   17.97
+  ],
+  "Latvia": [
+   24.1,
+   56.95
+  ],
+  "Lesotho": [
+   27.48,
+   -29.32
+  ],
+  "Lebanon": [
+   35.51,
+   33.87
+  ],
+  "Liberia": [
+   -10.8,
+   6.31
+  ],
+  "Libya": [
+   13.18,
+   32.89
+  ],
+  "Lithuania": [
+   25.32,
+   54.68
+  ],
+  "Liechtenstein": [
+   9.52,
+   47.13
+  ],
+  "Luxembourg": [
+   6.13,
+   49.61
+  ],
+  "Madagascar": [
+   47.51,
+   -18.91
+  ],
+  "Mauritius": [
+   57.5,
+   -20.17
+  ],
+  "Mauritania": [
+   -15.98,
+   18.09
+  ],
+  "Malawi": [
+   33.78,
+   -13.98
+  ],
+  "Malaysia": [
+   101.7,
+   3.17
+  ],
+  "Maldives": [
+   73.5,
+   4.17
+  ],
+  "Mali": [
+   -8.0,
+   12.65
+  ],
+  "Malta": [
+   14.51,
+   35.9
+  ],
+  "Morocco": [
+   -6.84,
+   34.03
+  ],
+  "Marshall Islands": [
+   171.38,
+   7.1
+  ],
+  "Mexico": [
+   -99.13,
+   19.44
+  ],
+  "Myanmar": [
+   96.12,
+   19.77
+  ],
+  "Micronesia": [
+   158.15,
+   6.92
+  ],
+  "Mozambique": [
+   32.59,
+   -25.95
+  ],
+  "Moldova": [
+   28.86,
+   47.01
+  ],
+  "Monaco": [
+   7.41,
+   43.74
+  ],
+  "Montenegro": [
+   19.27,
+   42.47
+  ],
+  "Mongolia": [
+   106.91,
+   47.92
+  ],
+  "Namibia": [
+   17.08,
+   -22.57
+  ],
+  "Nauru": [
+   166.92,
+   -0.55
+  ],
+  "Nepal": [
+   85.31,
+   27.72
+  ],
+  "Niger": [
+   2.11,
+   13.52
+  ],
+  "Nigeria": [
+   7.53,
+   9.09
+  ],
+  "Netherlands": [
+   4.91,
+   52.35
+  ],
+  "Nicaragua": [
+   -86.27,
+   12.15
+  ],
+  "Norway": [
+   10.75,
+   59.92
+  ],
+  "Oman": [
+   58.59,
+   23.61
+  ],
+  "Pakistan": [
+   73.16,
+   33.7
+  ],
+  "Palau": [
+   134.63,
+   7.49
+  ],
+  "Palestine": [
+   35.21,
+   31.9
+  ],
+  "Panama": [
+   -79.53,
+   8.97
+  ],
+  "Papua New Guinea": [
+   147.19,
+   -9.46
+  ],
+  "Paraguay": [
+   -57.64,
+   -25.29
+  ],
+  "Peru": [
+   -77.05,
+   -12.05
+  ],
+  "Poland": [
+   21.0,
+   52.25
+  ],
+  "Portugal": [
+   -9.15,
+   38.72
+  ],
+  "Rwanda": [
+   30.06,
+   -1.95
+  ],
+  "Romania": [
+   26.1,
+   44.44
+  ],
+  "Russia": [
+   37.61,
+   55.75
+  ],
+  "Greece": [
+   23.73,
+   37.99
+  ],
+  "El Salvador": [
+   -89.2,
+   13.71
+  ],
+  "Samoa": [
+   -171.74,
+   -13.84
+  ],
+  "South Africa": [
+   28.23,
+   -25.7
+  ],
+  "South Sudan": [
+   31.58,
+   4.83
+  ],
+  "San Marino": [
+   12.44,
+   43.94
+  ],
+  "São Tomé and Príncipe": [
+   6.73,
+   0.33
+  ],
+  "Saudi Arabia": [
+   46.77,
+   24.64
+  ],
+  "France": [
+   2.33,
+   48.87
+  ],
+  "Seychelles": [
+   55.45,
+   -4.62
+  ],
+  "Senegal": [
+   -17.48,
+   14.72
+  ],
+  "Saint Vincent and the Grenadines": [
+   -61.21,
+   13.15
+  ],
+  "Saint Kitts and Nevis": [
+   -62.72,
+   17.3
+  ],
+  "Saint Lucia": [
+   -61.0,
+   14.0
+  ],
+  "Serbia": [
+   20.47,
+   44.82
+  ],
+  "Sierra Leone": [
+   -13.24,
+   8.47
+  ],
+  "Singapore": [
+   103.85,
+   1.29
+  ],
+  "Syria": [
+   36.3,
+   33.5
+  ],
+  "Slovakia": [
+   17.12,
+   48.15
+  ],
+  "Slovenia": [
+   14.51,
+   46.06
+  ],
+  "Solomon Islands": [
+   159.95,
+   -9.44
+  ],
+  "Somalia": [
+   45.36,
+   2.07
+  ],
+  "Armenia": [
+   44.51,
+   40.18
+  ],
+  "Sudan": [
+   32.53,
+   15.59
+  ],
+  "Suriname": [
+   -55.17,
+   5.84
+  ],
+  "Taiwan": [
+   121.57,
+   25.04
+  ],
+  "Thailand": [
+   100.51,
+   13.75
+  ],
+  "Tanzania": [
+   35.75,
+   -6.18
+  ],
+  "Tajikistan": [
+   68.77,
+   38.56
+  ],
+  "Togo": [
+   1.22,
+   6.13
+  ],
+  "Tonga": [
+   -175.22,
+   -21.14
+  ],
+  "Trinidad and Tobago": [
+   -61.52,
+   10.65
+  ],
+  "Tuvalu": [
+   179.22,
+   -8.52
+  ],
+  "Tunisia": [
+   10.18,
+   36.8
+  ],
+  "Uganda": [
+   32.58,
+   0.32
+  ],
+  "Uzbekistan": [
+   69.29,
+   41.31
+  ],
+  "Ukraine": [
+   30.51,
+   50.44
+  ],
+  "Hungary": [
+   19.08,
+   47.5
+  ],
+  "Uruguay": [
+   -56.17,
+   -34.86
+  ],
+  "Philippines": [
+   120.98,
+   14.61
+  ],
+  "Finland": [
+   24.93,
+   60.18
+  ],
+  "Fiji": [
+   178.44,
+   -18.13
+  ],
+  "Kuwait": [
+   47.98,
+   29.37
+  ],
+  "Kazakhstan": [
+   71.43,
+   51.18
+  ],
+  "Kyrgyzstan": [
+   74.58,
+   42.88
+  ],
+  "Sweden": [
+   18.1,
+   59.35
+  ],
+  "Switzerland": [
+   7.47,
+   46.92
+  ],
+  "Sri Lanka": [
+   79.95,
+   6.9
+  ],
+  "Chad": [
+   15.05,
+   12.12
+  ],
+  "Czechia": [
+   14.46,
+   50.09
+  ],
+  "Chile": [
+   -70.67,
+   -33.45
+  ],
+  "China": [
+   116.39,
+   39.93
+  ],
+  "North Korea": [
+   125.75,
+   39.02
+  ],
+  "North Macedonia": [
+   21.43,
+   42.0
+  ],
+  "Central African Republic": [
+   18.56,
+   4.37
+  ],
+  "Croatia": [
+   16.0,
+   45.8
+  ],
+  "Djibouti": [
+   43.15,
+   11.6
+  ],
+  "Haiti": [
+   -72.34,
+   18.54
+  ],
+  "Honduras": [
+   -87.22,
+   14.1
+  ]
+ },
+ "aliases": {
+  "America": "United States",
+  "USA": "United States",
+  "UK": "United Kingdom",
+  "Britain": "United Kingdom"
+ },
+ "english": {
+  "Europe": "Europe",
+  "Australia": "Australia",
+  "Austria": "Austria",
+  "Afghanistan": "Afghanistan",
+  "Azerbaijan": "Azerbaijan",
+  "Albania": "Albania",
+  "Algeria": "Algeria",
+  "Angola": "Angola",
+  "Andorra": "Andorra",
+  "Antigua and Barbuda": "Antigua and Barbuda",
+  "United Arab Emirates": "United Arab Emirates",
+  "Argentina": "Argentina",
+  "Timor-Leste": "Timor-Leste",
+  "United States": "United States",
+  "New Zealand": "New Zealand",
+  "Bangladesh": "Bangladesh",
+  "Barbados": "Barbados",
+  "Bahamas": "Bahamas",
+  "Bahrain": "Bahrain",
+  "Belarus": "Belarus",
+  "Belgium": "Belgium",
+  "Belize": "Belize",
+  "Benin": "Benin",
+  "Bolivia": "Bolivia",
+  "Bosnia and Herzegovina": "Bosnia and Herzegovina",
+  "Botswana": "Botswana",
+  "Brazil": "Brazil",
+  "Brunei": "Brunei",
+  "Bulgaria": "Bulgaria",
+  "Burkina Faso": "Burkina Faso",
+  "Burundi": "Burundi",
+  "Bhutan": "Bhutan",
+  "Gabon": "Gabon",
+  "Guyana": "Guyana",
+  "Gambia": "Gambia",
+  "Ghana": "Ghana",
+  "Germany": "Germany",
+  "Guatemala": "Guatemala",
+  "Guinea": "Guinea",
+  "Guinea-Bissau": "Guinea-Bissau",
+  "Grenada": "Grenada",
+  "Denmark": "Denmark",
+  "United Kingdom": "United Kingdom",
+  "Dominica": "Dominica",
+  "Dominican Republic": "Dominican Republic",
+  "Egypt": "Egypt",
+  "Ethiopia": "Ethiopia",
+  "Ecuador": "Ecuador",
+  "Equatorial Guinea": "Equatorial Guinea",
+  "Iraq": "Iraq",
+  "Eritrea": "Eritrea",
+  "Eswatini": "Eswatini",
+  "Spain": "Spain",
+  "Estonia": "Estonia",
+  "Vanuatu": "Vanuatu",
+  "Vatican City": "Vatican City",
+  "Venezuela": "Venezuela",
+  "Vietnam": "Vietnam",
+  "Zambia": "Zambia",
+  "Zimbabwe": "Zimbabwe",
+  "Turkey": "Turkey",
+  "Turkmenistan": "Turkmenistan",
+  "Jamaica": "Jamaica",
+  "Japan": "Japan",
+  "Yemen": "Yemen",
+  "India": "India",
+  "Indonesia": "Indonesia",
+  "Jordan": "Jordan",
+  "Iran": "Iran",
+  "Ireland": "Ireland",
+  "Iceland": "Iceland",
+  "Israel": "Israel",
+  "Italy": "Italy",
+  "Cabo Verde": "Cabo Verde",
+  "Cambodia": "Cambodia",
+  "Cameroon": "Cameroon",
+  "Canada": "Canada",
+  "Qatar": "Qatar",
+  "Kenya": "Kenya",
+  "Cyprus": "Cyprus",
+  "Kiribati": "Kiribati",
+  "Colombia": "Colombia",
+  "Comoros": "Comoros",
+  "Republic of the Congo": "Republic of the Congo",
+  "DR Congo": "DR Congo",
+  "South Korea": "South Korea",
+  "Kosovo": "Kosovo",
+  "Costa Rica": "Costa Rica",
+  "Côte d'Ivoire": "Côte d'Ivoire",
+  "Cuba": "Cuba",
+  "Laos": "Laos",
+  "Latvia": "Latvia",
+  "Lesotho": "Lesotho",
+  "Lebanon": "Lebanon",
+  "Liberia": "Liberia",
+  "Libya": "Libya",
+  "Lithuania": "Lithuania",
+  "Liechtenstein": "Liechtenstein",
+  "Luxembourg": "Luxembourg",
+  "Madagascar": "Madagascar",
+  "Mauritius": "Mauritius",
+  "Mauritania": "Mauritania",
+  "Malawi": "Malawi",
+  "Malaysia": "Malaysia",
+  "Maldives": "Maldives",
+  "Mali": "Mali",
+  "Malta": "Malta",
+  "Morocco": "Morocco",
+  "Marshall Islands": "Marshall Islands",
+  "Mexico": "Mexico",
+  "Myanmar": "Myanmar",
+  "Micronesia": "Micronesia",
+  "Mozambique": "Mozambique",
+  "Moldova": "Moldova",
+  "Monaco": "Monaco",
+  "Montenegro": "Montenegro",
+  "Mongolia": "Mongolia",
+  "Namibia": "Namibia",
+  "Nauru": "Nauru",
+  "Nepal": "Nepal",
+  "Niger": "Niger",
+  "Nigeria": "Nigeria",
+  "Netherlands": "Netherlands",
+  "Nicaragua": "Nicaragua",
+  "Norway": "Norway",
+  "Oman": "Oman",
+  "Pakistan": "Pakistan",
+  "Palau": "Palau",
+  "Palestine": "Palestine",
+  "Panama": "Panama",
+  "Papua New Guinea": "Papua New Guinea",
+  "Paraguay": "Paraguay",
+  "Peru": "Peru",
+  "Poland": "Poland",
+  "Portugal": "Portugal",
+  "Rwanda": "Rwanda",
+  "Romania": "Romania",
+  "Russia": "Russia",
+  "Greece": "Greece",
+  "El Salvador": "El Salvador",
+  "Samoa": "Samoa",
+  "South Africa": "South Africa",
+  "South Sudan": "South Sudan",
+  "San Marino": "San Marino",
+  "São Tomé and Príncipe": "São Tomé and Príncipe",
+  "Saudi Arabia": "Saudi Arabia",
+  "France": "France",
+  "Seychelles": "Seychelles",
+  "Senegal": "Senegal",
+  "Saint Vincent and the Grenadines": "Saint Vincent and the Grenadines",
+  "Saint Kitts and Nevis": "Saint Kitts and Nevis",
+  "Saint Lucia": "Saint Lucia",
+  "Serbia": "Serbia",
+  "Sierra Leone": "Sierra Leone",
+  "Singapore": "Singapore",
+  "Syria": "Syria",
+  "Slovakia": "Slovakia",
+  "Slovenia": "Slovenia",
+  "Solomon Islands": "Solomon Islands",
+  "Somalia": "Somalia",
+  "Armenia": "Armenia",
+  "Sudan": "Sudan",
+  "Suriname": "Suriname",
+  "Taiwan": "Taiwan",
+  "Thailand": "Thailand",
+  "Tanzania": "Tanzania",
+  "Tajikistan": "Tajikistan",
+  "Togo": "Togo",
+  "Tonga": "Tonga",
+  "Trinidad and Tobago": "Trinidad and Tobago",
+  "Tuvalu": "Tuvalu",
+  "Tunisia": "Tunisia",
+  "Uganda": "Uganda",
+  "Uzbekistan": "Uzbekistan",
+  "Ukraine": "Ukraine",
+  "Hungary": "Hungary",
+  "Uruguay": "Uruguay",
+  "Philippines": "Philippines",
+  "Finland": "Finland",
+  "Fiji": "Fiji",
+  "Kuwait": "Kuwait",
+  "Kazakhstan": "Kazakhstan",
+  "Kyrgyzstan": "Kyrgyzstan",
+  "Sweden": "Sweden",
+  "Switzerland": "Switzerland",
+  "Sri Lanka": "Sri Lanka",
+  "Chad": "Chad",
+  "Czechia": "Czechia",
+  "Chile": "Chile",
+  "China": "China",
+  "North Korea": "North Korea",
+  "North Macedonia": "North Macedonia",
+  "Central African Republic": "Central African Republic",
+  "Croatia": "Croatia",
+  "Djibouti": "Djibouti",
+  "Haiti": "Haiti",
+  "Honduras": "Honduras"
+ }
+}

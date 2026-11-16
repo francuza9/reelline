@@ -1,0 +1,21 @@
+{
+  "canvas": {"width": 1296, "height": 1414, "note": "All coordinates in canvas pixels. The placeholder host is drawn as SVG on this canvas (remotion/src/channel_default/remotion/Mascot.tsx), so there are no image files."},
+  "mouth": {
+    "anchor": [648, 715],
+    "png_size": [260, 150],
+    "placement": "the mouth shape is drawn centred on the anchor",
+    "codes": {"X": "rest", "A": "M/B/P", "B": "S/T/K/EE", "C": "EH/AE", "D": "AA", "E": "AO/ER", "F": "OO/W", "G": "F/V", "H": "L"},
+    "rest_by_mood": {"neutral": "X", "happy": "X_happy", "surprised": "X_surprised", "note": "When the cue is X (not speaking), the mood's rest mouth."}
+  },
+  "eyes": {
+    "left": {"center": [548, 600], "radius_inner": 70, "radius_outer": 80},
+    "right": {"center": [748, 600], "radius_inner": 70, "radius_outer": 80}
+  },
+  "stalks": {
+    "left": {"top": [548, 600], "base": [548, 640]},
+    "right": {"top": [748, 600], "base": [748, 640]},
+    "sway": {"method": "none", "cut_row_y": 640}
+  },
+  "colors": {"yellow": "#5B8DEF", "outline": "#1B2440", "belly": "#8FB3F7", "chair": "#3A4468", "tongue": "#E9707F"},
+  "chair": {"seat_line_y": 1019, "wheel_bottom_y": 1368, "center_x": 648}
+}

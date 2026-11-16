@@ -1,0 +1,697 @@
+{
+ "migrations": [
+  {
+   "version": 1,
+   "name": "sources, stories, dropped, runs",
+   "statements": [
+    "CREATE TABLE sources (\n            id                   TEXT PRIMARY KEY,\n            last_ok_at           TEXT,\n            last_error           TEXT,\n            last_error_at        TEXT,\n            consecutive_failures INTEGER NOT NULL DEFAULT 0,\n            disabled_reason      TEXT,\n            disabled_at          TEXT,\n            etag                 TEXT,\n            last_modified        TEXT\n        )",
+    "CREATE TABLE runs (\n            id          INTEGER PRIMARY KEY,\n            started_at  TEXT NOT NULL,\n            finished_at TEXT,\n            status      TEXT NOT NULL,\n            args        TEXT NOT NULL,\n            counts      TEXT,\n            errors      TEXT\n        )",
+    "CREATE TABLE stories (\n            id            INTEGER PRIMARY KEY,\n            source_id     TEXT NOT NULL REFERENCES sources(id),\n            run_id        INTEGER REFERENCES runs(id),\n            url           TEXT NOT NULL,\n            canonical_url TEXT NOT NULL UNIQUE,\n            title         TEXT NOT NULL,\n            published_at  TEXT,\n            fetched_at    TEXT NOT NULL,\n            lang          TEXT NOT NULL,\n            text          TEXT NOT NULL,\n            text_hash     TEXT NOT NULL,\n            word_count    INTEGER NOT NULL,\n            status        TEXT NOT NULL DEFAULT 'new',\n            status_reason TEXT,\n            topic_hint    TEXT NOT NULL\n        )",
+    "CREATE INDEX stories_url ON stories(url)",
+    "CREATE INDEX stories_text_hash ON stories(text_hash)",
+    "CREATE INDEX stories_status ON stories(status, fetched_at)",
+    "CREATE INDEX stories_source ON stories(source_id, fetched_at)",
+    "CREATE TABLE dropped (\n            url           TEXT PRIMARY KEY,\n            canonical_url TEXT,\n            source_id     TEXT NOT NULL REFERENCES sources(id),\n            reason        TEXT NOT NULL,\n            detail        TEXT,\n            dropped_at    TEXT NOT NULL\n        )",
+    "CREATE INDEX dropped_canonical ON dropped(canonical_url)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 2,
+   "name": "stories.date_source; first-seen time for undated stories",
+   "statements": [
+    "ALTER TABLE stories ADD COLUMN date_source TEXT",
+    "UPDATE stories SET date_source = 'unknown' WHERE published_at IS NOT NULL",
+    "UPDATE stories SET published_at = fetched_at, date_source = 'first_seen' WHERE published_at IS NULL"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 3,
+   "name": "assessments, llm_calls",
+   "statements": [
+    "CREATE TABLE llm_calls (\n            id            INTEGER PRIMARY KEY,\n            purpose       TEXT NOT NULL,\n            model         TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            called_at     TEXT NOT NULL,\n            items         INTEGER NOT NULL,\n            input_tokens  INTEGER,\n            output_tokens INTEGER,\n            thinking_tokens INTEGER\n        )",
+    "CREATE TABLE assessments (\n            story_id      INTEGER PRIMARY KEY REFERENCES stories(id),\n            call_id       INTEGER REFERENCES llm_calls(id),\n            model         TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            assessed_at   TEXT NOT NULL,\n            banned        INTEGER NOT NULL,\n            banned_reason TEXT,\n            topic         TEXT NOT NULL,\n            edu_type      TEXT,\n            provider      TEXT,\n            provider_tier TEXT,\n            cost          TEXT,\n            marketing_or_low_credibility INTEGER,\n            georgia_relevance TEXT,\n            deadline      TEXT,\n            who_can_apply TEXT,\n            big_news      INTEGER,\n            niche         INTEGER,\n            base_score    REAL NOT NULL,\n            same_program_key TEXT NOT NULL,\n            summary       TEXT NOT NULL,\n            raw_json      TEXT NOT NULL\n        )",
+    "CREATE INDEX assessments_topic ON assessments(topic)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 4,
+   "name": "picks, menus",
+   "statements": [
+    "CREATE TABLE menus (\n            id            INTEGER PRIMARY KEY,\n            slot_date     TEXT NOT NULL,\n            slot_time     TEXT NOT NULL,\n            status        TEXT NOT NULL,\n            created_at    TEXT NOT NULL,\n            deadline_at   TEXT NOT NULL,\n            message_id    INTEGER,\n            candidates    TEXT NOT NULL,\n            selected      TEXT NOT NULL DEFAULT '[]',\n            resolved_at   TEXT,\n            resolved_by   TEXT\n        )",
+    "CREATE TABLE picks (\n            id              INTEGER PRIMARY KEY,\n            story_id        INTEGER NOT NULL REFERENCES stories(id),\n            slot_date       TEXT,\n            slot_time       TEXT,\n            status          TEXT NOT NULL,\n            effective_score REAL,\n            chosen_by       TEXT NOT NULL,\n            candidates      TEXT NOT NULL,\n            menu_id         INTEGER REFERENCES menus(id),\n            queue_position  INTEGER,\n            note            TEXT,\n            created_at      TEXT NOT NULL,\n            updated_at      TEXT NOT NULL\n        )",
+    "CREATE UNIQUE INDEX picks_slot ON picks(slot_date, slot_time)\n               WHERE status NOT IN ('queued', 'rejected')",
+    "CREATE INDEX picks_story ON picks(story_id)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 5,
+   "name": "briefs",
+   "statements": [
+    "CREATE TABLE briefs (\n            id             INTEGER PRIMARY KEY,\n            story_id       INTEGER NOT NULL REFERENCES stories(id),\n            pick_id        INTEGER REFERENCES picks(id),\n            path           TEXT NOT NULL,\n            created_at     TEXT NOT NULL,\n            model          TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            call_id        INTEGER REFERENCES llm_calls(id),\n            markdown       TEXT NOT NULL,\n            raw_json       TEXT NOT NULL\n        )",
+    "CREATE INDEX briefs_story ON briefs(story_id)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 6,
+   "name": "assessments.policy_angle",
+   "statements": [
+    "ALTER TABLE assessments ADD COLUMN policy_angle INTEGER"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 7,
+   "name": "scripts, jokes, captions; llm_calls script_id, cost_usd, served_model",
+   "statements": [
+    "CREATE TABLE scripts (\n            id             INTEGER PRIMARY KEY,\n            pick_id        INTEGER NOT NULL REFERENCES picks(id),\n            story_id       INTEGER NOT NULL REFERENCES stories(id),\n            brief_id       INTEGER REFERENCES briefs(id),\n            attempt        INTEGER NOT NULL,\n            status         TEXT NOT NULL,\n            draft          TEXT,\n            final          TEXT,\n            draft_lock     TEXT,\n            factcheck      TEXT,\n            failures       TEXT,\n            error          TEXT,\n            model          TEXT NOT NULL,\n            path           TEXT,\n            created_at     TEXT NOT NULL,\n            updated_at     TEXT NOT NULL\n        )",
+    "CREATE INDEX scripts_pick ON scripts(pick_id)",
+    "CREATE TABLE jokes (\n            id         INTEGER PRIMARY KEY,\n            script_id  INTEGER NOT NULL REFERENCES scripts(id),\n            text       TEXT NOT NULL,\n            created_at TEXT NOT NULL\n        )",
+    "CREATE INDEX jokes_script ON jokes(script_id)",
+    "CREATE TABLE captions (\n            id             INTEGER PRIMARY KEY,\n            script_id      INTEGER NOT NULL REFERENCES scripts(id),\n            hook           TEXT NOT NULL,\n            youtube_title  TEXT NOT NULL,\n            hashtags       TEXT NOT NULL,\n            model          TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            raw_json       TEXT NOT NULL,\n            created_at     TEXT NOT NULL\n        )",
+    "CREATE INDEX captions_script ON captions(script_id)",
+    "ALTER TABLE llm_calls ADD COLUMN script_id INTEGER REFERENCES scripts(id)",
+    "ALTER TABLE llm_calls ADD COLUMN cost_usd REAL",
+    "ALTER TABLE llm_calls ADD COLUMN served_model TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 8,
+   "name": "reels",
+   "statements": [
+    "CREATE TABLE reels (\n            id                INTEGER PRIMARY KEY,\n            pick_id           INTEGER NOT NULL REFERENCES picks(id),\n            script_id         INTEGER NOT NULL REFERENCES scripts(id),\n            name              TEXT NOT NULL,\n            background        TEXT NOT NULL,\n            background_source TEXT NOT NULL,\n            mood              TEXT NOT NULL,\n            status            TEXT NOT NULL,\n            attempts          INTEGER NOT NULL,\n            mp4_path          TEXT,\n            cover_path        TEXT,\n            images_path       TEXT,\n            attributions_path TEXT,\n            duration_s        REAL,\n            check_these       TEXT,\n            caption           TEXT,\n            tts_cost_usd      REAL,\n            error             TEXT,\n            render_s          REAL,\n            created_at        TEXT NOT NULL,\n            updated_at        TEXT NOT NULL\n        )",
+    "CREATE INDEX reels_pick ON reels(pick_id)",
+    "CREATE INDEX reels_script ON reels(script_id)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 9,
+   "name": "reels QA",
+   "statements": [
+    "ALTER TABLE reels ADD COLUMN qa_status TEXT",
+    "ALTER TABLE reels ADD COLUMN qa_failures TEXT",
+    "ALTER TABLE reels ADD COLUMN qa_warnings TEXT",
+    "ALTER TABLE reels ADD COLUMN qa_path TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 10,
+   "name": "reviews, jobs, rejections, bot_state; reels approval",
+   "statements": [
+    "CREATE TABLE reviews (\n            id                   INTEGER PRIMARY KEY,\n            reel_id              INTEGER NOT NULL REFERENCES reels(id),\n            pick_id              INTEGER NOT NULL REFERENCES picks(id),\n            status               TEXT NOT NULL,\n            state                TEXT NOT NULL,\n            message_id           INTEGER,\n            text                 TEXT NOT NULL,\n            lines                TEXT NOT NULL DEFAULT '[]',\n            reject_reason        TEXT,\n            caption_requested_at TEXT,\n            reminded_at          TEXT,\n            decided_at           TEXT,\n            decided_by           TEXT,\n            sent_at              TEXT NOT NULL,\n            updated_at           TEXT NOT NULL\n        )",
+    "CREATE INDEX reviews_reel ON reviews(reel_id)",
+    "CREATE INDEX reviews_status ON reviews(status)",
+    "CREATE TABLE jobs (\n            id          INTEGER PRIMARY KEY,\n            kind        TEXT NOT NULL,\n            slot_date   TEXT NOT NULL,\n            slot_time   TEXT NOT NULL,\n            pick_id     INTEGER NOT NULL REFERENCES picks(id),\n            review_id   INTEGER REFERENCES reviews(id),\n            story_fate  TEXT,\n            status      TEXT NOT NULL,\n            step        TEXT,\n            pid         INTEGER,\n            error       TEXT,\n            result      TEXT,\n            attempts    INTEGER NOT NULL DEFAULT 0,\n            message_id  INTEGER,\n            created_at  TEXT NOT NULL,\n            started_at  TEXT,\n            finished_at TEXT\n        )",
+    "CREATE INDEX jobs_slot ON jobs(slot_date, slot_time)",
+    "CREATE INDEX jobs_status ON jobs(status)",
+    "CREATE TABLE rejections (\n            id         INTEGER PRIMARY KEY,\n            reel_id    INTEGER NOT NULL REFERENCES reels(id),\n            pick_id    INTEGER NOT NULL REFERENCES picks(id),\n            script_id  INTEGER NOT NULL REFERENCES scripts(id),\n            story_id   INTEGER NOT NULL REFERENCES stories(id),\n            reason     TEXT NOT NULL,\n            next       TEXT NOT NULL,\n            by         TEXT,\n            created_at TEXT NOT NULL\n        )",
+    "CREATE TABLE bot_state (\n            key   TEXT PRIMARY KEY,\n            value TEXT NOT NULL\n        )",
+    "ALTER TABLE reels ADD COLUMN approved_at TEXT",
+    "ALTER TABLE reels ADD COLUMN approved_by TEXT",
+    "ALTER TABLE reels ADD COLUMN publish_at TEXT",
+    "ALTER TABLE reels ADD COLUMN publish_mode TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 11,
+   "name": "llm_calls as the cost ledger: reel, pick, job, manual, estimated; backfill",
+   "statements": [
+    "ALTER TABLE llm_calls ADD COLUMN reel_id INTEGER REFERENCES reels(id)",
+    "ALTER TABLE llm_calls ADD COLUMN pick_id INTEGER REFERENCES picks(id)",
+    "ALTER TABLE llm_calls ADD COLUMN job_id INTEGER REFERENCES jobs(id)",
+    "ALTER TABLE llm_calls ADD COLUMN manual INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE llm_calls ADD COLUMN estimated TEXT",
+    "CREATE INDEX llm_calls_called_at ON llm_calls(called_at)",
+    "CREATE INDEX llm_calls_script ON llm_calls(script_id)",
+    "UPDATE llm_calls SET pick_id = (SELECT s.pick_id FROM scripts s WHERE s.id = llm_calls.script_id)\n           WHERE script_id IS NOT NULL",
+    "UPDATE llm_calls SET pick_id = (SELECT b.pick_id FROM briefs b WHERE b.call_id = llm_calls.id)\n           WHERE pick_id IS NULL AND id IN (SELECT call_id FROM briefs WHERE call_id IS NOT NULL)",
+    "UPDATE llm_calls SET reel_id = (\n               SELECT r.id FROM reels r WHERE r.script_id = llm_calls.script_id AND r.created_at <= llm_calls.called_at\n               ORDER BY r.id DESC LIMIT 1)\n           WHERE script_id IS NOT NULL AND (purpose LIKE 'image%' OR purpose = 'qa_vision')",
+    "UPDATE llm_calls SET job_id = (\n               SELECT j.id FROM jobs j WHERE j.pick_id = llm_calls.pick_id AND j.started_at IS NOT NULL\n                   AND llm_calls.called_at >= j.started_at AND llm_calls.called_at <= COALESCE(j.finished_at, '9999')\n               ORDER BY j.id DESC LIMIT 1)\n           WHERE pick_id IS NOT NULL",
+    "UPDATE llm_calls SET\n               cost_usd = (COALESCE(input_tokens, 0) * 0.75\n                           + (COALESCE(output_tokens, 0) + COALESCE(thinking_tokens, 0)) * 3.75) / 1000000.0,\n               estimated = 'priced from tokens in migration 11 at $0.75 / $3.75 per 1M; thinking tokens were not '\n                           || 'recorded, so a lower bound'\n           WHERE cost_usd IS NULL AND model = 'gemini-3.8-flash'",
+    "INSERT INTO llm_calls (purpose, model, prompt_version, called_at, items, script_id, cost_usd,\n               served_model, reel_id, pick_id, job_id, estimated)\n           SELECT 'tts', 'gemini-3.8-flash-tts', 0, r.created_at, 1, r.script_id,\n               CASE WHEN prev.id IS NULL OR j.kind = 'new_voice' THEN r.tts_cost_usd\n                    ELSE MAX(r.tts_cost_usd - prev.tts_cost_usd, 0) END,\n               'gemini-3.8-flash-tts', r.id, r.pick_id, j.id,\n               'backfilled in migration 11 from reels.tts_cost_usd (cached takes counted once)'\n           FROM reels r\n           LEFT JOIN reels prev ON prev.id = (SELECT MAX(p.id) FROM reels p WHERE p.script_id = r.script_id\n                                                 AND p.id < r.id AND p.tts_cost_usd IS NOT NULL)\n           LEFT JOIN jobs j ON j.result = 'reel #' || r.id\n           WHERE r.tts_cost_usd IS NOT NULL\n           ORDER BY r.id"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 12,
+   "name": "publications, publish_calls; jobs.detail; reels r2_keys, published_at",
+   "statements": [
+    "CREATE TABLE publications (\n            id            INTEGER PRIMARY KEY,\n            reel_id       INTEGER NOT NULL REFERENCES reels(id),\n            channel       TEXT NOT NULL,\n            state         TEXT NOT NULL,\n            external_id   TEXT,\n            due_at        TEXT,\n            mode          TEXT,\n            url           TEXT,\n            error         TEXT,\n            comment_state TEXT,\n            comment_id    TEXT,\n            attempts      INTEGER NOT NULL DEFAULT 0,\n            checked_at    TEXT,\n            published_at  TEXT,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT NOT NULL,\n            UNIQUE (reel_id, channel)\n        )",
+    "CREATE INDEX publications_state ON publications(state)",
+    "CREATE TABLE publish_calls (\n            id          INTEGER PRIMARY KEY,\n            reel_id     INTEGER,\n            channel     TEXT,\n            action      TEXT NOT NULL,\n            method      TEXT NOT NULL,\n            endpoint    TEXT NOT NULL,\n            request     TEXT,\n            status      INTEGER,\n            external_id TEXT,\n            error       TEXT,\n            at          TEXT NOT NULL\n        )",
+    "CREATE INDEX publish_calls_reel ON publish_calls(reel_id)",
+    "ALTER TABLE jobs ADD COLUMN detail TEXT",
+    "ALTER TABLE reels ADD COLUMN r2_keys TEXT",
+    "ALTER TABLE reels ADD COLUMN published_at TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 13,
+   "name": "credits",
+   "statements": [
+    "CREATE TABLE credits (\n            reel_id     INTEGER PRIMARY KEY REFERENCES reels(id),\n            images      TEXT NOT NULL,\n            created_at  TEXT NOT NULL,\n            deployed_at TEXT,\n            url         TEXT\n        )"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 14,
+   "name": "jobs.pick_id nullable; chains, daily_tasks, daily_events",
+   "statements": [
+    "CREATE TABLE jobs_new (\n            id          INTEGER PRIMARY KEY,\n            kind        TEXT NOT NULL,\n            slot_date   TEXT NOT NULL,\n            slot_time   TEXT NOT NULL,\n            pick_id     INTEGER REFERENCES picks(id),\n            review_id   INTEGER REFERENCES reviews(id),\n            story_fate  TEXT,\n            status      TEXT NOT NULL,\n            step        TEXT,\n            pid         INTEGER,\n            error       TEXT,\n            result      TEXT,\n            attempts    INTEGER NOT NULL DEFAULT 0,\n            message_id  INTEGER,\n            created_at  TEXT NOT NULL,\n            started_at  TEXT,\n            finished_at TEXT,\n            detail      TEXT\n        )",
+    "INSERT INTO jobs_new (id, kind, slot_date, slot_time, pick_id, review_id, story_fate, status, step, pid, error,\n               result, attempts, message_id, created_at, started_at, finished_at, detail)\n           SELECT id, kind, slot_date, slot_time, pick_id, review_id, story_fate, status, step, pid, error, result,\n               attempts, message_id, created_at, started_at, finished_at, detail FROM jobs",
+    "DROP TABLE jobs",
+    "ALTER TABLE jobs_new RENAME TO jobs",
+    "CREATE INDEX jobs_slot ON jobs(slot_date, slot_time)",
+    "CREATE INDEX jobs_status ON jobs(status)",
+    "CREATE TABLE chains (\n            id           INTEGER PRIMARY KEY,\n            slot_date    TEXT NOT NULL,\n            slot_time    TEXT NOT NULL,\n            status       TEXT NOT NULL,\n            step         TEXT,\n            pid          INTEGER,\n            heartbeat_at TEXT,\n            resumes      INTEGER NOT NULL DEFAULT 0,\n            note         TEXT,\n            started_at   TEXT NOT NULL,\n            updated_at   TEXT NOT NULL,\n            finished_at  TEXT,\n            UNIQUE (slot_date, slot_time)\n        )",
+    "CREATE TABLE daily_tasks (\n            id          INTEGER PRIMARY KEY,\n            kind        TEXT NOT NULL,\n            status      TEXT NOT NULL,\n            pid         INTEGER,\n            error       TEXT,\n            started_at  TEXT NOT NULL,\n            finished_at TEXT\n        )",
+    "CREATE INDEX daily_tasks_kind ON daily_tasks(kind, started_at)",
+    "CREATE TABLE daily_events (\n            kind   TEXT NOT NULL,\n            key    TEXT NOT NULL,\n            at     TEXT NOT NULL,\n            detail TEXT,\n            PRIMARY KEY (kind, key)\n        )"
+   ],
+   "rebuild": true
+  },
+  {
+   "version": 15,
+   "name": "post_stats, account_stats, stats_health; publications.native_id",
+   "statements": [
+    "CREATE TABLE post_stats (\n            id             INTEGER PRIMARY KEY,\n            publication_id INTEGER NOT NULL REFERENCES publications(id),\n            reel_id        INTEGER NOT NULL REFERENCES reels(id),\n            channel        TEXT NOT NULL,\n            fetched_at     TEXT NOT NULL,\n            as_of          TEXT NOT NULL,\n            age_h          REAL NOT NULL,\n            target_h       REAL,\n            source         TEXT NOT NULL,\n            views          INTEGER,\n            likes          INTEGER,\n            comments       INTEGER,\n            shares         INTEGER,\n            saves          INTEGER,\n            reach          INTEGER,\n            follows        INTEGER,\n            avg_watch_s    REAL,\n            total_watch_s  REAL,\n            avg_pct        REAL,\n            pct_derived    INTEGER,\n            raw            TEXT\n        )",
+    "CREATE INDEX post_stats_pub ON post_stats(publication_id, as_of)",
+    "CREATE INDEX post_stats_reel ON post_stats(reel_id)",
+    "CREATE TABLE account_stats (\n            platform   TEXT NOT NULL,\n            day        TEXT NOT NULL,\n            followers  INTEGER NOT NULL,\n            fetched_at TEXT NOT NULL,\n            source     TEXT NOT NULL,\n            PRIMARY KEY (platform, day)\n        )",
+    "CREATE TABLE stats_health (\n            source        TEXT PRIMARY KEY,\n            ok_at         TEXT,\n            failing_since TEXT,\n            failures      INTEGER NOT NULL DEFAULT 0,\n            error         TEXT,\n            alerted       INTEGER NOT NULL DEFAULT 0,\n            updated_at    TEXT NOT NULL\n        )",
+    "ALTER TABLE publications ADD COLUMN native_id TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 16,
+   "name": "reels.opening_version",
+   "statements": [
+    "ALTER TABLE reels ADD COLUMN opening_version INTEGER",
+    "UPDATE reels SET opening_version = 1"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 17,
+   "name": "chains.mode",
+   "statements": [
+    "ALTER TABLE chains ADD COLUMN mode TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 18,
+   "name": "dismissals; pick_feedback view",
+   "statements": [
+    "CREATE TABLE dismissals (\n            id         INTEGER PRIMARY KEY,\n            story_id   INTEGER NOT NULL UNIQUE REFERENCES stories(id),\n            menu_id    INTEGER REFERENCES menus(id),\n            reason     TEXT NOT NULL,\n            slot_date  TEXT,\n            slot_time  TEXT,\n            by         TEXT,\n            note       TEXT,\n            created_at TEXT NOT NULL\n        )",
+    "CREATE INDEX dismissals_menu ON dismissals(menu_id)",
+    "CREATE VIEW pick_feedback AS\n               SELECT 'rejection' AS kind, story_id, pick_id, reel_id, NULL AS menu_id, reason, next AS detail, by,\n                      created_at FROM rejections\n               UNION ALL\n               SELECT 'dismissal', story_id, NULL, NULL, menu_id, reason, NULL, by, created_at FROM dismissals"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 19,
+   "name": "jobs.step_at",
+   "statements": [
+    "ALTER TABLE jobs ADD COLUMN step_at TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 20,
+   "name": "assessments: opportunity, open_status, reach, novelty, event_date",
+   "statements": [
+    "ALTER TABLE assessments ADD COLUMN opportunity INTEGER",
+    "ALTER TABLE assessments ADD COLUMN open_status TEXT",
+    "ALTER TABLE assessments ADD COLUMN reach TEXT",
+    "ALTER TABLE assessments ADD COLUMN novelty TEXT",
+    "ALTER TABLE assessments ADD COLUMN event_date TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 21,
+   "name": "shortlinks",
+   "statements": [
+    "CREATE TABLE shortlinks (\n            code        TEXT PRIMARY KEY,\n            target      TEXT NOT NULL,\n            reel_id     INTEGER REFERENCES reels(id),\n            kind        TEXT NOT NULL,\n            created_at  TEXT NOT NULL,\n            verified_at TEXT\n        )",
+    "CREATE INDEX shortlinks_reel ON shortlinks(reel_id, kind)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 22,
+   "name": "publications.comment_error, comment_at",
+   "statements": [
+    "ALTER TABLE publications ADD COLUMN comment_error TEXT",
+    "ALTER TABLE publications ADD COLUMN comment_at TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 23,
+   "name": "proofreads",
+   "statements": [
+    "CREATE TABLE proofreads (\n            id             INTEGER PRIMARY KEY,\n            script_id      INTEGER REFERENCES scripts(id),\n            kind           TEXT NOT NULL,\n            original       TEXT NOT NULL,\n            proofread      TEXT,\n            applied        INTEGER NOT NULL,\n            fixes          TEXT NOT NULL,\n            reason         TEXT,\n            prompt_version INTEGER NOT NULL,\n            created_at     TEXT NOT NULL\n        )",
+    "CREATE INDEX proofreads_script ON proofreads(script_id, kind)"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 24,
+   "name": "picks.flirt",
+   "statements": [
+    "ALTER TABLE picks ADD COLUMN flirt INTEGER"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 25,
+   "name": "picks.flirt_angle",
+   "statements": [
+    "ALTER TABLE picks ADD COLUMN flirt_angle TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 26,
+   "name": "llm_calls.error, attempt; scripts.passes",
+   "statements": [
+    "ALTER TABLE llm_calls ADD COLUMN error TEXT",
+    "ALTER TABLE llm_calls ADD COLUMN attempt INTEGER",
+    "ALTER TABLE scripts ADD COLUMN passes TEXT"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 27,
+   "name": "assessments.hook_strength, tech_significance",
+   "statements": [
+    "ALTER TABLE assessments ADD COLUMN hook_strength INTEGER",
+    "ALTER TABLE assessments ADD COLUMN tech_significance INTEGER"
+   ],
+   "rebuild": false
+  },
+  {
+   "version": 28,
+   "name": "reels.gag, gag_s, gag_mode",
+   "statements": [
+    "ALTER TABLE reels ADD COLUMN gag TEXT",
+    "ALTER TABLE reels ADD COLUMN gag_s REAL",
+    "ALTER TABLE reels ADD COLUMN gag_mode TEXT"
+   ],
+   "rebuild": false
+  }
+ ],
+ "objects": [
+  [
+   "index",
+   "assessments_topic",
+   "CREATE INDEX assessments_topic ON assessments(topic)"
+  ],
+  [
+   "index",
+   "briefs_story",
+   "CREATE INDEX briefs_story ON briefs(story_id)"
+  ],
+  [
+   "index",
+   "captions_script",
+   "CREATE INDEX captions_script ON captions(script_id)"
+  ],
+  [
+   "index",
+   "daily_tasks_kind",
+   "CREATE INDEX daily_tasks_kind ON daily_tasks(kind, started_at)"
+  ],
+  [
+   "index",
+   "dismissals_menu",
+   "CREATE INDEX dismissals_menu ON dismissals(menu_id)"
+  ],
+  [
+   "index",
+   "dropped_canonical",
+   "CREATE INDEX dropped_canonical ON dropped(canonical_url)"
+  ],
+  [
+   "index",
+   "jobs_slot",
+   "CREATE INDEX jobs_slot ON jobs(slot_date, slot_time)"
+  ],
+  [
+   "index",
+   "jobs_status",
+   "CREATE INDEX jobs_status ON jobs(status)"
+  ],
+  [
+   "index",
+   "jokes_script",
+   "CREATE INDEX jokes_script ON jokes(script_id)"
+  ],
+  [
+   "index",
+   "llm_calls_called_at",
+   "CREATE INDEX llm_calls_called_at ON llm_calls(called_at)"
+  ],
+  [
+   "index",
+   "llm_calls_script",
+   "CREATE INDEX llm_calls_script ON llm_calls(script_id)"
+  ],
+  [
+   "index",
+   "picks_slot",
+   "CREATE UNIQUE INDEX picks_slot ON picks(slot_date, slot_time)\n               WHERE status NOT IN ('queued', 'rejected')"
+  ],
+  [
+   "index",
+   "picks_story",
+   "CREATE INDEX picks_story ON picks(story_id)"
+  ],
+  [
+   "index",
+   "post_stats_pub",
+   "CREATE INDEX post_stats_pub ON post_stats(publication_id, as_of)"
+  ],
+  [
+   "index",
+   "post_stats_reel",
+   "CREATE INDEX post_stats_reel ON post_stats(reel_id)"
+  ],
+  [
+   "index",
+   "proofreads_script",
+   "CREATE INDEX proofreads_script ON proofreads(script_id, kind)"
+  ],
+  [
+   "index",
+   "publications_state",
+   "CREATE INDEX publications_state ON publications(state)"
+  ],
+  [
+   "index",
+   "publish_calls_reel",
+   "CREATE INDEX publish_calls_reel ON publish_calls(reel_id)"
+  ],
+  [
+   "index",
+   "reels_pick",
+   "CREATE INDEX reels_pick ON reels(pick_id)"
+  ],
+  [
+   "index",
+   "reels_script",
+   "CREATE INDEX reels_script ON reels(script_id)"
+  ],
+  [
+   "index",
+   "reviews_reel",
+   "CREATE INDEX reviews_reel ON reviews(reel_id)"
+  ],
+  [
+   "index",
+   "reviews_status",
+   "CREATE INDEX reviews_status ON reviews(status)"
+  ],
+  [
+   "index",
+   "scripts_pick",
+   "CREATE INDEX scripts_pick ON scripts(pick_id)"
+  ],
+  [
+   "index",
+   "shortlinks_reel",
+   "CREATE INDEX shortlinks_reel ON shortlinks(reel_id, kind)"
+  ],
+  [
+   "index",
+   "sqlite_autoindex_account_stats_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_bot_state_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_chains_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_daily_events_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_dismissals_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_dropped_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_publications_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_shortlinks_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_sources_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_stats_health_1",
+   null
+  ],
+  [
+   "index",
+   "sqlite_autoindex_stories_1",
+   null
+  ],
+  [
+   "index",
+   "stories_source",
+   "CREATE INDEX stories_source ON stories(source_id, fetched_at)"
+  ],
+  [
+   "index",
+   "stories_status",
+   "CREATE INDEX stories_status ON stories(status, fetched_at)"
+  ],
+  [
+   "index",
+   "stories_text_hash",
+   "CREATE INDEX stories_text_hash ON stories(text_hash)"
+  ],
+  [
+   "index",
+   "stories_url",
+   "CREATE INDEX stories_url ON stories(url)"
+  ],
+  [
+   "table",
+   "account_stats",
+   "CREATE TABLE account_stats (\n            platform   TEXT NOT NULL,\n            day        TEXT NOT NULL,\n            followers  INTEGER NOT NULL,\n            fetched_at TEXT NOT NULL,\n            source     TEXT NOT NULL,\n            PRIMARY KEY (platform, day)\n        )"
+  ],
+  [
+   "table",
+   "assessments",
+   "CREATE TABLE assessments (\n            story_id      INTEGER PRIMARY KEY REFERENCES stories(id),\n            call_id       INTEGER REFERENCES llm_calls(id),\n            model         TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            assessed_at   TEXT NOT NULL,\n            banned        INTEGER NOT NULL,\n            banned_reason TEXT,\n            topic         TEXT NOT NULL,\n            edu_type      TEXT,\n            provider      TEXT,\n            provider_tier TEXT,\n            cost          TEXT,\n            marketing_or_low_credibility INTEGER,\n            georgia_relevance TEXT,\n            deadline      TEXT,\n            who_can_apply TEXT,\n            big_news      INTEGER,\n            niche         INTEGER,\n            base_score    REAL NOT NULL,\n            same_program_key TEXT NOT NULL,\n            summary       TEXT NOT NULL,\n            raw_json      TEXT NOT NULL\n        , policy_angle INTEGER, opportunity INTEGER, open_status TEXT, reach TEXT, novelty TEXT, event_date TEXT, hook_strength INTEGER, tech_significance INTEGER)"
+  ],
+  [
+   "table",
+   "bot_state",
+   "CREATE TABLE bot_state (\n            key   TEXT PRIMARY KEY,\n            value TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "briefs",
+   "CREATE TABLE briefs (\n            id             INTEGER PRIMARY KEY,\n            story_id       INTEGER NOT NULL REFERENCES stories(id),\n            pick_id        INTEGER REFERENCES picks(id),\n            path           TEXT NOT NULL,\n            created_at     TEXT NOT NULL,\n            model          TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            call_id        INTEGER REFERENCES llm_calls(id),\n            markdown       TEXT NOT NULL,\n            raw_json       TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "captions",
+   "CREATE TABLE captions (\n            id             INTEGER PRIMARY KEY,\n            script_id      INTEGER NOT NULL REFERENCES scripts(id),\n            hook           TEXT NOT NULL,\n            youtube_title  TEXT NOT NULL,\n            hashtags       TEXT NOT NULL,\n            model          TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            raw_json       TEXT NOT NULL,\n            created_at     TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "chains",
+   "CREATE TABLE chains (\n            id           INTEGER PRIMARY KEY,\n            slot_date    TEXT NOT NULL,\n            slot_time    TEXT NOT NULL,\n            status       TEXT NOT NULL,\n            step         TEXT,\n            pid          INTEGER,\n            heartbeat_at TEXT,\n            resumes      INTEGER NOT NULL DEFAULT 0,\n            note         TEXT,\n            started_at   TEXT NOT NULL,\n            updated_at   TEXT NOT NULL,\n            finished_at  TEXT, mode TEXT,\n            UNIQUE (slot_date, slot_time)\n        )"
+  ],
+  [
+   "table",
+   "credits",
+   "CREATE TABLE credits (\n            reel_id     INTEGER PRIMARY KEY REFERENCES reels(id),\n            images      TEXT NOT NULL,\n            created_at  TEXT NOT NULL,\n            deployed_at TEXT,\n            url         TEXT\n        )"
+  ],
+  [
+   "table",
+   "daily_events",
+   "CREATE TABLE daily_events (\n            kind   TEXT NOT NULL,\n            key    TEXT NOT NULL,\n            at     TEXT NOT NULL,\n            detail TEXT,\n            PRIMARY KEY (kind, key)\n        )"
+  ],
+  [
+   "table",
+   "daily_tasks",
+   "CREATE TABLE daily_tasks (\n            id          INTEGER PRIMARY KEY,\n            kind        TEXT NOT NULL,\n            status      TEXT NOT NULL,\n            pid         INTEGER,\n            error       TEXT,\n            started_at  TEXT NOT NULL,\n            finished_at TEXT\n        )"
+  ],
+  [
+   "table",
+   "dismissals",
+   "CREATE TABLE dismissals (\n            id         INTEGER PRIMARY KEY,\n            story_id   INTEGER NOT NULL UNIQUE REFERENCES stories(id),\n            menu_id    INTEGER REFERENCES menus(id),\n            reason     TEXT NOT NULL,\n            slot_date  TEXT,\n            slot_time  TEXT,\n            by         TEXT,\n            note       TEXT,\n            created_at TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "dropped",
+   "CREATE TABLE dropped (\n            url           TEXT PRIMARY KEY,\n            canonical_url TEXT,\n            source_id     TEXT NOT NULL REFERENCES sources(id),\n            reason        TEXT NOT NULL,\n            detail        TEXT,\n            dropped_at    TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "jobs",
+   "CREATE TABLE \"jobs\" (\n            id          INTEGER PRIMARY KEY,\n            kind        TEXT NOT NULL,\n            slot_date   TEXT NOT NULL,\n            slot_time   TEXT NOT NULL,\n            pick_id     INTEGER REFERENCES picks(id),\n            review_id   INTEGER REFERENCES reviews(id),\n            story_fate  TEXT,\n            status      TEXT NOT NULL,\n            step        TEXT,\n            pid         INTEGER,\n            error       TEXT,\n            result      TEXT,\n            attempts    INTEGER NOT NULL DEFAULT 0,\n            message_id  INTEGER,\n            created_at  TEXT NOT NULL,\n            started_at  TEXT,\n            finished_at TEXT,\n            detail      TEXT\n        , step_at TEXT)"
+  ],
+  [
+   "table",
+   "jokes",
+   "CREATE TABLE jokes (\n            id         INTEGER PRIMARY KEY,\n            script_id  INTEGER NOT NULL REFERENCES scripts(id),\n            text       TEXT NOT NULL,\n            created_at TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "llm_calls",
+   "CREATE TABLE llm_calls (\n            id            INTEGER PRIMARY KEY,\n            purpose       TEXT NOT NULL,\n            model         TEXT NOT NULL,\n            prompt_version INTEGER NOT NULL,\n            called_at     TEXT NOT NULL,\n            items         INTEGER NOT NULL,\n            input_tokens  INTEGER,\n            output_tokens INTEGER,\n            thinking_tokens INTEGER\n        , script_id INTEGER REFERENCES scripts(id), cost_usd REAL, served_model TEXT, reel_id INTEGER REFERENCES reels(id), pick_id INTEGER REFERENCES picks(id), job_id INTEGER REFERENCES jobs(id), manual INTEGER NOT NULL DEFAULT 0, estimated TEXT, error TEXT, attempt INTEGER)"
+  ],
+  [
+   "table",
+   "menus",
+   "CREATE TABLE menus (\n            id            INTEGER PRIMARY KEY,\n            slot_date     TEXT NOT NULL,\n            slot_time     TEXT NOT NULL,\n            status        TEXT NOT NULL,\n            created_at    TEXT NOT NULL,\n            deadline_at   TEXT NOT NULL,\n            message_id    INTEGER,\n            candidates    TEXT NOT NULL,\n            selected      TEXT NOT NULL DEFAULT '[]',\n            resolved_at   TEXT,\n            resolved_by   TEXT\n        )"
+  ],
+  [
+   "table",
+   "picks",
+   "CREATE TABLE picks (\n            id              INTEGER PRIMARY KEY,\n            story_id        INTEGER NOT NULL REFERENCES stories(id),\n            slot_date       TEXT,\n            slot_time       TEXT,\n            status          TEXT NOT NULL,\n            effective_score REAL,\n            chosen_by       TEXT NOT NULL,\n            candidates      TEXT NOT NULL,\n            menu_id         INTEGER REFERENCES menus(id),\n            queue_position  INTEGER,\n            note            TEXT,\n            created_at      TEXT NOT NULL,\n            updated_at      TEXT NOT NULL\n        , flirt INTEGER, flirt_angle TEXT)"
+  ],
+  [
+   "table",
+   "post_stats",
+   "CREATE TABLE post_stats (\n            id             INTEGER PRIMARY KEY,\n            publication_id INTEGER NOT NULL REFERENCES publications(id),\n            reel_id        INTEGER NOT NULL REFERENCES reels(id),\n            channel        TEXT NOT NULL,\n            fetched_at     TEXT NOT NULL,\n            as_of          TEXT NOT NULL,\n            age_h          REAL NOT NULL,\n            target_h       REAL,\n            source         TEXT NOT NULL,\n            views          INTEGER,\n            likes          INTEGER,\n            comments       INTEGER,\n            shares         INTEGER,\n            saves          INTEGER,\n            reach          INTEGER,\n            follows        INTEGER,\n            avg_watch_s    REAL,\n            total_watch_s  REAL,\n            avg_pct        REAL,\n            pct_derived    INTEGER,\n            raw            TEXT\n        )"
+  ],
+  [
+   "table",
+   "proofreads",
+   "CREATE TABLE proofreads (\n            id             INTEGER PRIMARY KEY,\n            script_id      INTEGER REFERENCES scripts(id),\n            kind           TEXT NOT NULL,\n            original       TEXT NOT NULL,\n            proofread      TEXT,\n            applied        INTEGER NOT NULL,\n            fixes          TEXT NOT NULL,\n            reason         TEXT,\n            prompt_version INTEGER NOT NULL,\n            created_at     TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "publications",
+   "CREATE TABLE publications (\n            id            INTEGER PRIMARY KEY,\n            reel_id       INTEGER NOT NULL REFERENCES reels(id),\n            channel       TEXT NOT NULL,\n            state         TEXT NOT NULL,\n            external_id   TEXT,\n            due_at        TEXT,\n            mode          TEXT,\n            url           TEXT,\n            error         TEXT,\n            comment_state TEXT,\n            comment_id    TEXT,\n            attempts      INTEGER NOT NULL DEFAULT 0,\n            checked_at    TEXT,\n            published_at  TEXT,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT NOT NULL, native_id TEXT, comment_error TEXT, comment_at TEXT,\n            UNIQUE (reel_id, channel)\n        )"
+  ],
+  [
+   "table",
+   "publish_calls",
+   "CREATE TABLE publish_calls (\n            id          INTEGER PRIMARY KEY,\n            reel_id     INTEGER,\n            channel     TEXT,\n            action      TEXT NOT NULL,\n            method      TEXT NOT NULL,\n            endpoint    TEXT NOT NULL,\n            request     TEXT,\n            status      INTEGER,\n            external_id TEXT,\n            error       TEXT,\n            at          TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "reels",
+   "CREATE TABLE reels (\n            id                INTEGER PRIMARY KEY,\n            pick_id           INTEGER NOT NULL REFERENCES picks(id),\n            script_id         INTEGER NOT NULL REFERENCES scripts(id),\n            name              TEXT NOT NULL,\n            background        TEXT NOT NULL,\n            background_source TEXT NOT NULL,\n            mood              TEXT NOT NULL,\n            status            TEXT NOT NULL,\n            attempts          INTEGER NOT NULL,\n            mp4_path          TEXT,\n            cover_path        TEXT,\n            images_path       TEXT,\n            attributions_path TEXT,\n            duration_s        REAL,\n            check_these       TEXT,\n            caption           TEXT,\n            tts_cost_usd      REAL,\n            error             TEXT,\n            render_s          REAL,\n            created_at        TEXT NOT NULL,\n            updated_at        TEXT NOT NULL\n        , qa_status TEXT, qa_failures TEXT, qa_warnings TEXT, qa_path TEXT, approved_at TEXT, approved_by TEXT, publish_at TEXT, publish_mode TEXT, r2_keys TEXT, published_at TEXT, opening_version INTEGER, gag TEXT, gag_s REAL, gag_mode TEXT)"
+  ],
+  [
+   "table",
+   "rejections",
+   "CREATE TABLE rejections (\n            id         INTEGER PRIMARY KEY,\n            reel_id    INTEGER NOT NULL REFERENCES reels(id),\n            pick_id    INTEGER NOT NULL REFERENCES picks(id),\n            script_id  INTEGER NOT NULL REFERENCES scripts(id),\n            story_id   INTEGER NOT NULL REFERENCES stories(id),\n            reason     TEXT NOT NULL,\n            next       TEXT NOT NULL,\n            by         TEXT,\n            created_at TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "reviews",
+   "CREATE TABLE reviews (\n            id                   INTEGER PRIMARY KEY,\n            reel_id              INTEGER NOT NULL REFERENCES reels(id),\n            pick_id              INTEGER NOT NULL REFERENCES picks(id),\n            status               TEXT NOT NULL,\n            state                TEXT NOT NULL,\n            message_id           INTEGER,\n            text                 TEXT NOT NULL,\n            lines                TEXT NOT NULL DEFAULT '[]',\n            reject_reason        TEXT,\n            caption_requested_at TEXT,\n            reminded_at          TEXT,\n            decided_at           TEXT,\n            decided_by           TEXT,\n            sent_at              TEXT NOT NULL,\n            updated_at           TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "runs",
+   "CREATE TABLE runs (\n            id          INTEGER PRIMARY KEY,\n            started_at  TEXT NOT NULL,\n            finished_at TEXT,\n            status      TEXT NOT NULL,\n            args        TEXT NOT NULL,\n            counts      TEXT,\n            errors      TEXT\n        )"
+  ],
+  [
+   "table",
+   "schema_version",
+   "CREATE TABLE schema_version (\n                version    INTEGER PRIMARY KEY,\n                name       TEXT NOT NULL,\n                applied_at TEXT NOT NULL\n            )"
+  ],
+  [
+   "table",
+   "scripts",
+   "CREATE TABLE scripts (\n            id             INTEGER PRIMARY KEY,\n            pick_id        INTEGER NOT NULL REFERENCES picks(id),\n            story_id       INTEGER NOT NULL REFERENCES stories(id),\n            brief_id       INTEGER REFERENCES briefs(id),\n            attempt        INTEGER NOT NULL,\n            status         TEXT NOT NULL,\n            draft          TEXT,\n            final          TEXT,\n            draft_lock     TEXT,\n            factcheck      TEXT,\n            failures       TEXT,\n            error          TEXT,\n            model          TEXT NOT NULL,\n            path           TEXT,\n            created_at     TEXT NOT NULL,\n            updated_at     TEXT NOT NULL\n        , passes TEXT)"
+  ],
+  [
+   "table",
+   "shortlinks",
+   "CREATE TABLE shortlinks (\n            code        TEXT PRIMARY KEY,\n            target      TEXT NOT NULL,\n            reel_id     INTEGER REFERENCES reels(id),\n            kind        TEXT NOT NULL,\n            created_at  TEXT NOT NULL,\n            verified_at TEXT\n        )"
+  ],
+  [
+   "table",
+   "sources",
+   "CREATE TABLE sources (\n            id                   TEXT PRIMARY KEY,\n            last_ok_at           TEXT,\n            last_error           TEXT,\n            last_error_at        TEXT,\n            consecutive_failures INTEGER NOT NULL DEFAULT 0,\n            disabled_reason      TEXT,\n            disabled_at          TEXT,\n            etag                 TEXT,\n            last_modified        TEXT\n        )"
+  ],
+  [
+   "table",
+   "stats_health",
+   "CREATE TABLE stats_health (\n            source        TEXT PRIMARY KEY,\n            ok_at         TEXT,\n            failing_since TEXT,\n            failures      INTEGER NOT NULL DEFAULT 0,\n            error         TEXT,\n            alerted       INTEGER NOT NULL DEFAULT 0,\n            updated_at    TEXT NOT NULL\n        )"
+  ],
+  [
+   "table",
+   "stories",
+   "CREATE TABLE stories (\n            id            INTEGER PRIMARY KEY,\n            source_id     TEXT NOT NULL REFERENCES sources(id),\n            run_id        INTEGER REFERENCES runs(id),\n            url           TEXT NOT NULL,\n            canonical_url TEXT NOT NULL UNIQUE,\n            title         TEXT NOT NULL,\n            published_at  TEXT,\n            fetched_at    TEXT NOT NULL,\n            lang          TEXT NOT NULL,\n            text          TEXT NOT NULL,\n            text_hash     TEXT NOT NULL,\n            word_count    INTEGER NOT NULL,\n            status        TEXT NOT NULL DEFAULT 'new',\n            status_reason TEXT,\n            topic_hint    TEXT NOT NULL\n        , date_source TEXT)"
+  ],
+  [
+   "view",
+   "pick_feedback",
+   "CREATE VIEW pick_feedback AS\n               SELECT 'rejection' AS kind, story_id, pick_id, reel_id, NULL AS menu_id, reason, next AS detail, by,\n                      created_at FROM rejections\n               UNION ALL\n               SELECT 'dismissal', story_id, NULL, NULL, menu_id, reason, NULL, by, created_at FROM dismissals"
+  ]
+ ],
+ "applied": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28
+ ]
+}

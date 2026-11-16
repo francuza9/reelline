@@ -1,0 +1,31 @@
+# Two public feeds with permissive terms: US federal agencies' news (NASA's and NOAA's pages are
+# US government works, public domain unless a page says otherwise). Check robots.txt and the
+# feed's current URL before you run it live (`reelline doctor`); keys: reelline/pipeline/sources.py.
+
+- id: nasa_releases
+  name: NASA news releases
+  topic: tech
+  geography: global
+  lang: en
+  type: rss
+  url: https://www.nasa.gov/news-release/feed/
+  priority: 1
+  enabled: true
+  min_words: 80
+  notes: >-
+    NASA's own release feed (WordPress). Public domain unless a page credits a third party.
+    Feed URL not re-checked from this repository: run it once and watch the ingest log.
+
+- id: noaa_news
+  name: NOAA news
+  topic: tech
+  geography: global
+  lang: en
+  type: rss
+  url: https://www.noaa.gov/rss.xml
+  priority: 2
+  enabled: true
+  min_words: 80
+  notes: >-
+    NOAA's news feed. A US government work (public domain unless a page says otherwise).
+    Feed URL not re-checked from this repository: run it once and watch the ingest log.

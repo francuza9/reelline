@@ -1,0 +1,38 @@
+{
+	"note": "The share arrow (remotion/src/ShareArrow.tsx): while the host says the share line (@share, channel docs/scripts.md 'The share line'), a hand-drawn arrow points at the platform's own share button. Shared with reelline/media/share.py (the timing, the platforms and their files) and scripts/render_reel.py (one render without the arrow, then only the arrow's stretch per platform, joined: reel_<platform>.mp4). Timing, in seconds: the arrow starts appearDelayS after the line's first word, draws itself along its curve over drawS, its head pops, then it nudges toward the button (wiggle) until the line's last word ends and leaves over exitS (shrinking into the button). Pixel values are output pixels (1080x1920). The shaft is drawn in a frame where its tip is at (0, 0) pointing along +x: a chord of lengthPx from the tail, bowed by bendPx, with a loop of loop.radiusPx between loop.from and loop.to (fractions of the way), and a little wobble; each platform turns it so its head points along angleDeg (0 right, 90 down) and sets the head's tip gapPx from the button's centre. platforms: the share button's centre in the video (button), from each app's Reels/Shorts player as of 2026-10 (sources in channel docs/scripts.md 'The share arrow'); any arrow or label key can be overridden per platform. reviewPlatform: the version reel.mp4 is (the Telegram review's).",
+	"on": true,
+	"appearDelayS": 0.1,
+	"drawS": 0.55,
+	"exitS": 0.3,
+	"reviewPlatform": "instagram",
+	"arrow": {
+		"lengthPx": 700,
+		"turnDeg": -40,
+		"loop": {"on": true, "at": 0.45, "lengthPx": 380, "turns": -1},
+		"wobbleDeg": 4,
+		"samples": 160,
+		"strokePx": 22,
+		"outlinePx": 7,
+		"colors": {"shaft": "#FF7EB6", "head": "#FDDB0A", "ink": "#14120C"},
+		"head": {"lengthPx": 74, "widthPx": 78, "notch": 0.28, "popS": 0.22, "fromScale": 0.3, "damping": 9},
+		"wiggle": {"distancePx": 18, "hz": 1.6, "rotateDeg": 3.0},
+		"exit": {"scaleTo": 0.35, "towardPx": 40}
+	},
+	"label": {
+		"on": true,
+		"text": "გაუგზავნე!",
+		"fontPx": 44,
+		"color": "#FDDB0A",
+		"rotateDeg": -8,
+		"offset": [40, -50],
+		"popS": 0.25,
+		"fromScale": 0.5,
+		"damping": 10
+	},
+	"platforms": {
+		"instagram": {"button": [956, 1576], "angleDeg": 50, "gapPx": 52},
+		"tiktok": {"button": [1003, 1656], "angleDeg": 50, "gapPx": 52},
+		"youtube": {"button": [960, 1455], "angleDeg": 50, "gapPx": 52, "lengthPx": 600},
+		"facebook": {"button": [967, 1510], "angleDeg": 50, "gapPx": 52}
+	}
+}

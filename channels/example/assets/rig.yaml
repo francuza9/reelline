@@ -1,0 +1,6 @@
+# The example channel's host (reelline/render/base.py HostRig): a placeholder drawn by the renderer as flat SVG
+# shapes from anchors.json alone (its colors, eye and mouth placement; the mouth shapes A-H, X and the moods'
+# rests are drawn in remotion/src/channel_default/remotion/Mascot.tsx). No image files.
+name: example-host
+kind: svg
+anchors: anchors.json

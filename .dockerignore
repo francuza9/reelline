@@ -1,0 +1,21 @@
+.git
+.github
+.venv
+.claude
+out
+logs
+docs
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.env
+**/.env
+engine/tools/rhubarb
+engine/src/reelline.egg-info
+# a channel's runtime state stays on the host (it is mounted, not baked in)
+channels/*/data
+channels/*/content/reels
+channels/*/content/briefs

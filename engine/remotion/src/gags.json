@@ -1,0 +1,103 @@
+{
+	"note": "The cold open (channel docs/gags.md): a ~1.5 s gag of the host caught doing something embarrassing before the reel, then a hard cut into it. Shared by reelline/media/gags.py (picks the gag, checks this file, builds the gag's sound, the props) and remotion/src/ColdOpen.tsx + gag.ts (draw it). Times in seconds from the gag's first frame; pixel values are output pixels (1080x1920). The art is assets/gags/ (tools/gags/build.py makes it from assets_src/gags/); the sounds are in the SFX library (assets/sfx/sfx.json, categories gag and scratch; tools/gags/sfx.py added them).",
+	"mode": "on",
+	"modeNote": "on: every reel (since 2026-10-28); ab: a seeded share of the reels (abShare, per reel name) get a gag, the rest none, recorded on the reel (reels.gag, gag_mode) for the retention comparison (2026-10-25 to 10-27); off: none. The straight style (reelline/media/style.py STYLE_MODE \"straight\", since 2026-10-31) puts no gag on any reel whatever this says (reelline/media/gags.py mode_of()); this mode is the classic style's. scripts/render_reel.py --gag overrides both for one render (auto | none | a gag).",
+	"abShare": 0.5,
+	"noRepeat": 8,
+	"noRepeatNote": "A gag isn't picked again while it's among the gags of the last noRepeat reels (rendered, approved or published; the reel being rendered not counted), from the database (reelline/media/gags.py recent_gags()).",
+	"seed": "{seedPrefix}-gags-v1",
+	"timing": {
+		"note": "0 to caughtS the action pose, looping (gags.<gag>.loop) under the camera's slow push-in; at caughtS the caught pose (staring at the viewer) with a zoom punch and a white flash, the record scratch; still from holdFromS; the reel starts at durationS (a hard cut). durationS and caughtS are whole frames at 30 fps.",
+		"durationS": 1.5,
+		"caughtS": 1.0,
+		"holdFromS": 1.4
+	},
+	"placement": {
+		"note": "A gag's poses share one scale: the larger of the two (the action and the caught pose; a back pose alone) fits boxPx; each stands with its bottom on wheelsY (the front rig's wheel line) and its middle on centerX.",
+		"boxPx": [860, 1050],
+		"wheelsY": 1770,
+		"centerX": 540
+	},
+	"camera": {
+		"note": "The action beat's push-in from 1 to pushTo (eased), about origin (backOrigin for a back pose: between the TV and him). The caught pose's punch about punchOrigin (his face): up to punchTo over punchInS with a small overshoot, then creeping to creepTo until holdFromS. The flash: flashColor at flashOpacity from caughtS, gone over flashS.",
+		"pushTo": 1.07,
+		"origin": "50% 70%",
+		"backOrigin": "50% 48%",
+		"punchTo": 1.12,
+		"punchInS": 0.12,
+		"creepTo": 1.14,
+		"punchOrigin": "50% 56%",
+		"flashColor": "#FFFFFF",
+		"flashOpacity": 0.35,
+		"flashS": 0.1
+	},
+	"audio": {
+		"note": "The gag's sound (reelline/media/gags.py gag_audio()): the action sound from 0, cut at caughtS with a fadeOutS fade; the record scratch from caughtS. Levels against the reel's own mix target (reelline/media/music.py MIX_LOUDNORM; the gag has no voice): the sfx categories' gain_db plus the gag's gainDb; each limited to ceilingDbfs (sample peak). No music under the gag: it starts with the reel, at the cut.",
+		"fadeOutS": 0.03,
+		"ceilingDbfs": -3.0
+	},
+	"loopNote": "The action pose's loop, in two drawings: steps 2 alternates two states every periodS / 2 (A: shake right, tilt left, down; B: shake left, tilt right, up bobPx, squashed by squash (negative: stretched; width the opposite, half as much), swollen by swell); steps 0 moves smoothly between them (a sine). The pivot is the pose's bottom middle.",
+	"scratch": {"sound": "scratch_fs431777", "gainDb": 0},
+	"gags": {
+		"tiktok_dance": {
+			"sound": "gag_tiktok_dance_fs64612", "gainDb": 0,
+			"loop": {"periodS": 0.5, "steps": 2, "bobPx": 34, "shakePx": 0, "tiltDeg": 7, "squash": -0.06, "swell": 0},
+			"tv": null
+		},
+		"rage_quit": {
+			"sound": "gag_rage_quit_fs481681", "gainDb": 0,
+			"loop": {"periodS": 0.1, "steps": 2, "bobPx": 4, "shakePx": 9, "tiltDeg": 2.5, "squash": 0, "swell": 0},
+			"tv": {"cropY": 0.0}
+		},
+		"crying_romcom": {
+			"sound": "gag_crying_romcom_fs343411", "gainDb": 0,
+			"loop": {"periodS": 0.3, "steps": 2, "bobPx": 10, "shakePx": 3, "tiltDeg": 1.5, "squash": 0.035, "swell": 0},
+			"tv": {"cropY": 0.12}
+		},
+		"selfie": {
+			"sound": "gag_selfie_fs404843", "gainDb": 0,
+			"loop": {"periodS": 0.5, "steps": 2, "bobPx": 12, "shakePx": 0, "tiltDeg": 5, "squash": -0.04, "swell": 0},
+			"tv": null
+		},
+		"stress_eating": {
+			"sound": "gag_stress_eating_fs379345", "gainDb": 0,
+			"loop": {"periodS": 0.36, "steps": 2, "bobPx": 6, "shakePx": 0, "tiltDeg": 1.5, "squash": 0.05, "swell": 0},
+			"tv": null
+		},
+		"lying_to_mom": {
+			"sound": "gag_lying_to_mom_fs720133", "gainDb": 0,
+			"loop": {"periodS": 0.32, "steps": 2, "bobPx": 9, "shakePx": 0, "tiltDeg": 3, "squash": 0.03, "swell": 0},
+			"tv": null
+		},
+		"doom_scroll": {
+			"sound": "gag_doom_scroll_fs235911", "gainDb": 0,
+			"loop": {"periodS": 0.333, "steps": 2, "bobPx": 3, "shakePx": 0, "tiltDeg": 1, "squash": 0.015, "swell": 0},
+			"tv": null
+		},
+		"face_mask": {
+			"sound": "gag_face_mask_fs419594", "gainDb": 0,
+			"loop": {"periodS": 1.0, "steps": 0, "bobPx": 6, "shakePx": 0, "tiltDeg": 2.5, "squash": -0.02, "swell": 0},
+			"tv": null
+		},
+		"mirror_talk": {
+			"sound": "gag_mirror_talk_fs361077", "gainDb": 0,
+			"loop": {"periodS": 0.4, "steps": 2, "bobPx": 10, "shakePx": 0, "tiltDeg": 3, "squash": -0.05, "swell": 0},
+			"tv": null
+		},
+		"sleeping": {
+			"sound": "gag_sleeping_fs774670", "gainDb": 0,
+			"loop": {"periodS": 1.0, "steps": 0, "bobPx": 0, "shakePx": 0, "tiltDeg": 0, "squash": 0, "swell": 0.045},
+			"tv": null
+		},
+		"hiding_evidence": {
+			"sound": "gag_hiding_evidence_fs85679", "gainDb": 0,
+			"loop": {"periodS": 0.16, "steps": 2, "bobPx": 4, "shakePx": 7, "tiltDeg": 2, "squash": 0, "swell": 0},
+			"tv": null
+		},
+		"ai_cheating": {
+			"sound": "gag_ai_cheating_fs677658", "gainDb": 0,
+			"loop": {"periodS": 0.12, "steps": 2, "bobPx": 4, "shakePx": 2, "tiltDeg": 0, "squash": 0.015, "swell": 0},
+			"tv": null
+		}
+	}
+}

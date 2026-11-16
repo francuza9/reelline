@@ -1,0 +1,30 @@
+@cover: 20,000 lari for students
+
+@style: energetic
+@card: New competition
+@image: students in a computer lab
+Students have a new competition, and the prize is really big.
+
+@card: Agency and FinEdu
+@fx: condition fintech ideas | ideas
+The national innovation agency and a financial education project announce a new university competition. Participants can present financial technology ideas and solve real problems. <chuckle> You cannot even check your card balance yet.
+
+@details
+@style: friendly
+The details are waiting at the end.
+
+@card: 20,000 lari grant
+The winning team travels to a big technology conference, and the prize fund includes a grant of twenty thousand lari. Students aged seventeen and older can take part.
+
+@card: 2-4 students
+@fx: condition students and one mentor
+Each team needs two to four students and one mentor. Registration runs until the start of October, so time is short.
+
+@share
+Send this to the friend who has been building a fintech startup for three years and still has no name.
+
+@style: warm
+@card: The chance
+If you like thinking about money, do not miss this chance. <snort> I would win this blindfolded.
+
+That's the news.

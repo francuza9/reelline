@@ -1,0 +1,358 @@
+{
+	"note": "the host's motion pass (reelline/motion.py plans it, remotion/src/motion.ts draws it; channel docs/fx.md \"Motion\"). Times in seconds. Random picks (a zoom's scale, a reaction's length, a shot's length and framing) are seeded with `seed` and the moment's index. The opening's push-in and the outrage/disgust shake are remotion/src/opening.ts OPENING's.",
+	"seed": "host-motion-v1",
+	"punchline": {
+		"note": "A punchline is the sentence right before a laugh tag (`tags`; on prod scripts 79% of those are punch-up's jokes, against 68% after <short pause>) or the closing jab's last sentence (89%). It lands on its last word's end. The flirt and details lines have none. The push-ins: at most maxPerReel, the closing jab first, then in time order, minGapS apart, none before notBeforeS (the opening's burst). The reaction poses and the bounces take every punchline (reaction, bounce).",
+		"tags": [
+			"snort",
+			"snicker",
+			"chuckle",
+			"laugh"
+		],
+		"closingJab": true,
+		"maxPerReel": 3,
+		"minGapS": 2.5,
+		"notBeforeS": 1.5
+	},
+	"zoom": {
+		"note": "A push-in on the host's face landing on the punchline: from inS before it up to scale (a seeded pick in the range), held holdS, eased back over outS. Never while a fact graphic is out, nor over the end card (its way back out may run under the card when the push-in and hold are seen before it: reelline/motion.py); the framing never cuts during its way in and hold, and one inside a close shot is left out (framing).",
+		"scale": [
+			1.08,
+			1.12
+		],
+		"inS": 0.32,
+		"holdS": 0.3,
+		"outS": 0.75,
+		"origin": "50% 60%"
+	},
+	"reaction": {
+		"note": "Right after a punchline lands (delayS) the host takes a reaction pose for a seeded length in lengthS, easing in over inS and out over outS: after every joke whose tag has a pose (`byTag`, the closing jab: `jab`), not only the ones with a push-in. Made from the rig and the rest mouths only: the poses/*.png art has its own, smaller chair and body (not the rig's), so a swap would jump. mouth is the rest mouth shown while the cue is X; lid 0 open .. 1 shut; pupil [x, y] as a fraction of the eye white's radius (eyeroll sweeps from pupil to pupilTo); leanDeg the stalks' shear (positive leans the tops left); stalkStretch added to the stalks' height; wobbleDeg/wobbleHz a stalk wiggle; popHz/pop a body giggle. At most maxPerReel, minGapS apart (end to start), none before punchline.notBeforeS, never while a fact graphic is out or over the end card (but one seen half way before the card may run on under it: reelline/motion.py).",
+		"maxPerReel": 6,
+		"minGapS": 2.0,
+		"delayS": 0.05,
+		"lengthS": [
+			0.6,
+			1.0
+		],
+		"inS": 0.12,
+		"outS": 0.2,
+		"byTag": {
+			"snort": "smug",
+			"snicker": "smug",
+			"chuckle": "laugh",
+			"laugh": "laugh",
+			"jab": "eyeroll"
+		},
+		"poses": {
+			"smug": {
+				"mouth": "X_smug",
+				"lid": 0.42,
+				"pupil": [
+					0.32,
+					0.08
+				],
+				"pupilTo": null,
+				"leanDeg": -4,
+				"stalkStretch": -0.03,
+				"wobbleDeg": 0,
+				"wobbleHz": 0,
+				"pop": 0,
+				"popHz": 0
+			},
+			"laugh": {
+				"mouth": "X_happy",
+				"lid": 0.55,
+				"pupil": [
+					0,
+					0
+				],
+				"pupilTo": null,
+				"leanDeg": 0,
+				"stalkStretch": 0.05,
+				"wobbleDeg": 4,
+				"wobbleHz": 4,
+				"pop": 0.025,
+				"popHz": 5
+			},
+			"eyeroll": {
+				"mouth": "X_skeptical",
+				"lid": 0.3,
+				"pupil": [
+					-0.45,
+					-0.2
+				],
+				"pupilTo": [
+					0.45,
+					-0.2
+				],
+				"leanDeg": 3,
+				"stalkStretch": 0,
+				"wobbleDeg": 0,
+				"wobbleHz": 0,
+				"pop": 0,
+				"popHz": 0
+			}
+		}
+	},
+	"bounce": {
+		"note": "A squash-and-stretch on each punchline: at every laugh tag's place (`tags`; the word before it ends, or, for a tag before a paragraph's first word, leadS before that word) and on the closing jab's and the share line's last word. Squash first: the body's height is 1 - amount * e^(-dt/tauS) * sin(2*pi*hz*dt) from the moment (its width the opposite, widthRatio as much), over within durationS. At least minGapS apart, none before notBeforeS, never over the end card.",
+		"enabled": true,
+		"tags": [
+			"snort",
+			"snicker",
+			"chuckle",
+			"laugh"
+		],
+		"jab": true,
+		"share": true,
+		"leadS": 0.3,
+		"amount": 0.075,
+		"widthRatio": 0.6,
+		"tauS": 0.14,
+		"hz": 3.2,
+		"durationS": 0.6,
+		"minGapS": 1.2,
+		"notBeforeS": 1.0
+	},
+	"lean": {
+		"note": "A lean-in on emphasis: the first word after a <short pause> (the reveal), a word with a digit in it (a number; its {display|spoken} group's first word) and the last word of a sentence ending in '!'. The body widens (scaleX), drops (scaleY, from the seat) and the eyes grow and the stalks shorten (foreshortened toward the camera), in over inS (landing on the word's start, a little overshoot), held over the word (holdS: at least / at most), back over outS. At most maxPerReel, the reveals first, then in time order; minGapS apart (end to start), none before notBeforeS, never over a reaction, a stalk reaction or a push-in, nor over the end card.",
+		"enabled": true,
+		"afterPause": true,
+		"numbers": true,
+		"exclaim": true,
+		"maxPerReel": 6,
+		"minGapS": 1.5,
+		"notBeforeS": 1.5,
+		"inS": 0.12,
+		"holdS": [
+			0.3,
+			0.9
+		],
+		"outS": 0.22,
+		"overshoot": 0.18,
+		"scaleX": 0.05,
+		"scaleY": -0.04,
+		"stalkStretch": -0.08,
+		"eyeGrow": 0.1
+	},
+	"stalks": {
+		"note": "Eye-stalk reactions to a paragraph's delivery, on its first word (+ delayS): `byStyle` maps a word in its @style (lower case, the first pair that matches) to a pose, a paragraph without one takes the reel mood's (`byMood`; null: none). Paragraph 1 has the opener instead. A pose snaps in over inS (overshooting by `overshoot`), holds for a seeded length in lengthS and eases back over outS. Moved later (at most maxShiftS) past a glance or a reaction pose, else left out; minGapS apart, never over the end card. Pose: stretch added to the stalks' height, eyeGrow to the eye whites, pupilScale the pupils' size, lid 0 open .. 1 shut, leanDeg the stalks' shear outward (negative: inward, toward each other), pupil [x, y] as a fraction of the eye white's radius, cross each pupil toward the other eye (cross-eyed), same unit.",
+		"enabled": true,
+		"byStyle": [
+			[
+				"excite",
+				"perk"
+			],
+			[
+				"shock",
+				"perk"
+			],
+			[
+				"teas",
+				"perk"
+			],
+			[
+				"brisk",
+				"perk"
+			],
+			[
+				"deadpan",
+				"droop"
+			],
+			[
+				"dry",
+				"droop"
+			],
+			[
+				"neutral",
+				"droop"
+			],
+			[
+				"brutal",
+				"cross"
+			],
+			[
+				"disgust",
+				"cross"
+			],
+			[
+				"outrage",
+				"cross"
+			]
+		],
+		"byMood": {
+			"neutral": null,
+			"bored": "droop",
+			"surprised": "perk",
+			"smug": null,
+			"happy": "perk",
+			"skeptical": "cross"
+		},
+		"delayS": 0.05,
+		"inS": 0.1,
+		"overshoot": 0.25,
+		"lengthS": [
+			0.9,
+			1.3
+		],
+		"outS": 0.18,
+		"maxShiftS": 1.5,
+		"minGapS": 1.5,
+		"poses": {
+			"perk": {
+				"stretch": 0.12,
+				"eyeGrow": 0.1,
+				"pupilScale": 0.82,
+				"lid": 0,
+				"leanDeg": -2,
+				"pupil": [
+					0,
+					-0.12
+				],
+				"cross": 0
+			},
+			"droop": {
+				"stretch": -0.16,
+				"eyeGrow": 0,
+				"pupilScale": 1,
+				"lid": 0.45,
+				"leanDeg": 8,
+				"pupil": [
+					0,
+					0.3
+				],
+				"cross": 0
+			},
+			"cross": {
+				"stretch": -0.05,
+				"eyeGrow": 0.06,
+				"pupilScale": 0.9,
+				"lid": 0.22,
+				"leanDeg": -12,
+				"pupil": [
+					0,
+					0.05
+				],
+				"cross": 0.38
+			}
+		}
+	},
+	"tvGlance": {
+		"note": "When the TV's picture changes (not its first one) or a fact graphic pops out (after the card's leadS), the host's pupils dart up to the TV (pupil), the stalks stretch up a little, held holdS, then back. None during a reaction, over the end card, before notBeforeS, or within minGapS of the one before. The rig's random glances (rig.ts RIG.glance) skip their stretch.",
+		"delayS": 0.08,
+		"dartS": 0.12,
+		"holdS": 0.55,
+		"returnS": 0.18,
+		"pupil": [
+			0,
+			-0.5
+		],
+		"stalkStretch": 0.06,
+		"minGapS": 1.5,
+		"notBeforeS": 1.0
+	},
+	"framing": {
+		"note": "The camera: hard cuts between `shots` like a two-camera talk show, each a crop of the composed scene (background, TV, the host; the captions, the fact cards and the end card stay put): scale about origin (output pixels). The reel opens on `first`; each shot runs a seeded length in lengthS (minShotS..maxShotS; longer when no boundary is in reach), then cuts to another shot (never the same; a seeded pick by `weights`) on a sentence or clause boundary (a word ending in .!?… or ,;:–— or before a lone dash, a paragraph's end, or a pause of pauseS or more in the voice): cutLeadS before the next word, the boundary nearest the target, a sentence end preferred by sentenceBonusS. No cut before notBeforeS, while a card is in flight (springing out of the TV, flightPadS more; flying back, flightPadS before), during a push-in's way in and hold, nor within minShotS of the end card. A `close` shot crops the TV (its face loses ~6% at the sides): never while a card is out (a cut out of it comes before the card), nor in the first tvReadS of a new TV picture (0: any time); a punchline push-in inside a close shot is left out (the close-up is the push-in). While a card is out only cardShots; while the share arrow is up (remotion/src/share.json: drawn for the wide frame, beside the host) only arrowShots. `safe` (reelline/motion.py framing_problems(), Remotion and QA check it): in every shot, with the largest push-in it can take, the host's eyes and mouth (at rest, rigPadPx bigger all round for the rig's moves) stay below the caption block's bottom plus captionClearancePx, above bottomPx and sideMarginPx in from the sides, below the card in cardShots; a non-close shot keeps the whole TV in the frame.",
+		"enabled": true,
+		"shots": {
+			"wide": {
+				"scale": 1,
+				"origin": [
+					540,
+					960
+				],
+				"close": false
+			},
+			"medium": {
+				"scale": 1.18,
+				"origin": [
+					540,
+					700
+				],
+				"close": false
+			},
+			"close": {
+				"scale": 1.42,
+				"origin": [
+					540,
+					905
+				],
+				"close": true
+			}
+		},
+		"first": "wide",
+		"weights": {
+			"wide": 1,
+			"medium": 1.2,
+			"close": 1.2
+		},
+		"lengthS": [
+			4.0,
+			6.0
+		],
+		"minShotS": 2.5,
+		"maxShotS": 7.5,
+		"notBeforeS": 2.0,
+		"cutLeadS": 0.08,
+		"pauseS": 0.2,
+		"sentenceBonusS": 0.6,
+		"flightPadS": 0.1,
+		"tvReadS": 0,
+		"cardShots": [
+			"wide",
+			"medium"
+		],
+		"arrowShots": [
+			"wide"
+		],
+		"safe": {
+			"captionClearancePx": 0,
+			"bottomPx": 1600,
+			"sideMarginPx": 60,
+			"rigPadPx": 12
+		},
+		"angles": {
+			"note": "The camera's angle, a second dimension of a shot (reelline/motion.py plan_angles(); the art: remotion/src/angles.json): front is the default and the reel's majority; a shot in another angle is one of rules[angle].shots (a seeded pick), cut to and out of on a sentence's end only (the framing's cut points of kind sentence: never during a card's flight or a push-in's way in and hold), not before notBeforeS nor within minShotS of the end card, with at least minFrontS of front between two. Never over what the angle can't show: a fact card (the frame-0 one too) outside cardAngles, the share arrow outside arrowAngles, and, for an angle without his face (face false), a push-in or a reaction pose (none of the beats' push-ins in it either). kind share: seeded spans of lengthS until a seeded share of the body (frame 0 to the end card) in `share`, never more than its top. kind beat: at most maxPerReel short beats of lengthS, first where a new TV picture comes up within pictureS of the beat's start (from behind, he turns to it; on prod's reels only ~1 in 6 has a short enough sentence there), then, with `elsewhere` (and pictures on the TV), on any other short sentence, with a glance up at the TV from its start (tvGlance's timings; none over a reaction, a stalk reaction or within its minGapS of another glance). An angle the reel's background has no art for (angles.json backgrounds) isn't used.",
+			"enabled": false,
+			"notBeforeS": 2.5,
+			"minFrontS": 4.0,
+			"attempts": 12,
+			"cardAngles": [
+				"front"
+			],
+			"arrowAngles": [
+				"front"
+			],
+			"rules": {}
+		}
+	},
+	"beats": {
+		"note": "A visual change at least every maxGapS in the first windowS seconds (half the audience leaves by ~8.6 s), and every body.maxGapS after it, to the end card (reelline/motion.py beats() and fill_beats()). Beats: frame 0 (the opening: push-in, burst, the frame-0 card), a fact graphic springing out (its start) and flying back (its end - back.durationS), a TV picture change no card covers, a framing cut, and the start of each zoom, reaction, glance, lean-in, stalk reaction and bounce. Where two beats are more than maxGapS apart (the window's end counts as one in the first pass, the end card in the second), fillers are spread evenly in the gap from what exists: a push-in (zoom inS/holdS/outS at a seeded scale in zoomScale) landing on a word's end, or a glance up at the TV (tvGlance timings) from a word's end, in `kinds` order (alternating, the other kind when one doesn't fit). A filler lands within snapS of its even spot (a sentence's last word preferred by sentenceEndBonusS), at least minSpacingS from every other beat, not before notBeforeS (the push-in and the burst are on until ~0.5 s), never over another zoom, reaction or glance or the end card; a filler zoom never while a card is out, in a close shot or over a cut (a glance may look up at a card).",
+		"enabled": true,
+		"windowS": 10.0,
+		"maxGapS": 3.0,
+		"minSpacingS": 1.2,
+		"notBeforeS": 1.0,
+		"snapS": 0.8,
+		"sentenceEndBonusS": 0.4,
+		"kinds": [
+			"zoom",
+			"glance"
+		],
+		"zoomScale": [
+			1.05,
+			1.07
+		],
+		"body": {
+			"enabled": true,
+			"maxGapS": 3.5
+		}
+	},
+	"tvPowerOn": {
+		"note": "Frame 0: the TV is switching on: a white wash of `from` over its face (the first picture under it, already on) fading out over durationS, with the tv_on sound at 0.25 s (reelline/sfx/config.py TV_CLICK opening_s).",
+		"enabled": true,
+		"from": 0.35,
+		"durationS": 0.3,
+		"color": "#FFFFFF"
+	}
+}

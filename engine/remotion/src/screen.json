@@ -1,0 +1,40 @@
+{
+	"note": "Wall TV geometry, screen-image and idle-face tunables, shared by remotion/src/Scene.tsx and reelline/media/images (min resolution, crop aspect). Pixel values are output pixels (1080x1920).",
+	"screen": {
+		"x": 108,
+		"y": 290,
+		"width": 864,
+		"height": 400,
+		"radius": 40,
+		"bezelPx": 26,
+		"faceRadius": 18
+	},
+	"image": {
+		"crossfadeFrames": 6,
+		"kenBurns": {
+			"seed": "screen-image-v1",
+			"zoomTo": 1.06,
+			"originJitter": 0.08
+		},
+		"logo": {
+			"paddingPx": 34,
+			"zoomTo": 1.015
+		},
+		"brightness": 1.0,
+		"saturate": 0.95,
+		"vignette": {"color": "rgba(8, 6, 24, 0.275)", "blurPx": 70, "spreadPx": 6}
+	},
+	"idle": {
+		"panel": "#17163A",
+		"scanlines": {"color": "rgba(255, 255, 255, 0.035)", "lineHeightPx": 1, "periodPx": 4},
+		"mark": {
+			"text": "",
+			"color": "#FDDB0A",
+			"fontFamily": "Fredoka",
+			"fontWeight": 600,
+			"fontPx": 40,
+			"letterSpacingEm": 0.06,
+			"opacity": 0.9
+		}
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"note": "The outro: the end card (remotion/src/EndCard.tsx) over the host's last line, then a short hold with music only. Shared with reelline/media/outro.py (timing, the facts file, the music lift and fade) and pipeline/endcard.py (the fields and their limits). startAt is the line the card comes in on: \"tag\" (the tag line, TAG_LINE: the cleanest, after every joke and the share line) or \"share\" (the share line, @share; a script without one falls back to the tag). The card irises open leadS before that line's first word (never before the previous word's end), the host's voice goes on under it (the scene and the captions are gone once it's open: the card is a frame of its own and a caption would sit on its facts), and after the voice ends the card holds holdS with music only. fields: the card's fact lines in their order on the card; maxChars is the most characters a line may have (checked when the facts are written and again before any render); the card fits every line at its longest, at the smallest sizes in EndCard.tsx, or the render fails. footer: shown on every card, small, at the bottom. Music: as before the change (2026-10-25), the bed is ducked under the voice and raised by musicLiftDb once the voice has ended (ramped over musicLiftS), and fades out over the reel's last musicFadeS seconds (musicLiftS + musicFadeS at most holdS).",
+	"startAt": "tag",
+	"leadS": 0.15,
+	"holdS": 1.5,
+	"fields": [
+		{"key": "name", "maxChars": 40},
+		{"key": "what", "maxChars": 60},
+		{"key": "who", "maxChars": 50},
+		{"key": "deadline", "maxChars": 30},
+		{"key": "cost", "maxChars": 30},
+		{"key": "apply", "maxChars": 30}
+	],
+	"footer": ["Partly made with AI", "Source: see the caption"],
+	"musicFadeS": 1.2,
+	"musicLiftDb": 1.1,
+	"musicLiftS": 0.3
+}

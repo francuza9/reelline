@@ -1,0 +1,71 @@
+# The example channel: the smallest English channel that runs the whole chain. Everything not set here
+# has the engine's default (schema: engine/src/reelline/config/schema/, `reelline config show`).
+# Credentials are only in .env (`reelline config env-example` writes .env.example).
+
+sources: sources.yaml
+
+channel:
+  name: example
+  display_name: Example Explainer
+  operator: Example Explainer
+  contact: contact@example.com
+  app_name: example-publisher
+  user_agent: ExampleExplainer/{version} (+contact@example.com)
+  robots_agent: ExampleExplainer
+  language: en
+  timezone: UTC
+  utc_offset_h: 0
+  slots: ['12:00']
+  fonts: [Fredoka-Variable.ttf]
+  background_check_headline: A new background
+
+# One provider writes, another checks (swap a role's provider/model here; models.providers names the endpoints).
+models:
+  # The voice: a Gemini TTS voice id in .env (EXAMPLE_VOICE_ID), see voice/voice.md. English, no pinned tag take.
+  tts:
+    provider: google
+    model: gemini-3.8-flash-tts
+    voice_id_env: EXAMPLE_VOICE_ID
+    transport_retry: false
+
+# No proofreader, no ranking or stats; the review is automatic and the reel is only written to disk.
+pipeline: [ingest, assess, pick, brief, write, style, factcheck, cards, fx, caption, save, render, review, publish]
+
+steps:
+  pick:
+    topic: other
+    weekly_topic: ''
+  proofread:
+    enabled: false
+  produce:
+    default_mood: neutral
+  script:
+    tag_line: That's the news.
+    story_words: [60, 110]
+    story_min_georgian: 0.8
+    straight_opening: null
+    flirt_probability: 0.0
+  factcheck:
+    repair_rounds: 1
+
+review:
+  channel: auto
+
+notify:
+  channel: log
+
+publish:
+  enabled: true
+  shortlinks:
+    enabled: false
+  targets: {local: local}
+  channels: {local: true}
+  labels: {local: Local files}
+
+render:
+  rig_dir: assets
+
+# Files the platforms would fetch wait in a folder; nothing is uploaded anywhere.
+storage:
+  blob:
+    kind: local

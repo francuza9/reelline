@@ -1,0 +1,30 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+# The Gemini roles (reelline/providers/google.py): the reelline[google] extra.
+google-genai>=2.25.0,<3
+python-dotenv
+# Forced alignment (MMS_FA). torchaudio's native lib is built against a single
+# torch version and its wheel doesn't declare the pin, so keep these in lockstep.
+torch==2.11.0+cpu
+torchaudio==2.11.0+cpu
+uroman==1.3.1.1
+# Not used directly; without it torch warns "Failed to initialize NumPy" on import.
+numpy==2.5.3
+# HTTP for Telegram, Wikimedia Commons and Pexels (already a google-genai dependency).
+httpx==0.28.1
+# Wall-TV images: decode/validate, crop math inputs, luminance, contact sheets.
+pillow==12.3.0
+# Pipeline (pipeline/): the sources registry and listing selectors.
+PyYAML==6.0.3
+lxml==6.1.3
+cssselect==1.5.0
+# Ingest (reelline/pipeline/ingest.py): HTTP, feeds, article text, RFC 9309 robots.txt.
+requests==2.34.2
+feedparser==6.0.14
+trafilatura==2.2.0
+Protego==0.7.0
+# The Claude roles (reelline/providers/anthropic.py): the reelline[anthropic] extra.
+anthropic==1.10.0
+# The config schema (reelline/config/schema.py); already a dependency of anthropic and google-genai.
+pydantic==2.13.5
+# Publishing (reelline/pipeline/r2.py): Cloudflare R2 through its S3 API (upload, presigned GET, delete).
+boto3==1.43.107

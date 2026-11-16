@@ -1,0 +1,148 @@
+# The public repo's CI (built from ops/export/github/workflows/ci.yml by the export; the private repo has its own).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: engine/requirements*.txt
+      - name: System packages
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg
+      # Node and Remotion's packages: the golden test (tests/test_golden_example.py) renders stills with them.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engine/remotion/package-lock.json
+      - run: npm ci
+        working-directory: engine/remotion
+      - name: Install
+        run: |
+          pip install -r engine/requirements.txt -r engine/requirements-dev.txt
+          pip install --no-deps -e engine
+      - name: Tests
+        run: python -m pytest engine/tests -q
+      - name: Config and doctor
+        run: |
+          reelline config show --channel channels/example > /dev/null
+          reelline doctor --channel channels/example --no-secrets
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff==0.17.5
+      - name: ruff check
+        run: ruff check --config engine/pyproject.toml engine
+      - name: ruff format
+        run: ruff format --check --config engine/pyproject.toml engine
+
+  types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: engine/requirements*.txt
+      - name: Install
+        run: |
+          pip install -r engine/requirements.txt -r engine/requirements-dev.txt
+          pip install --no-deps -e engine
+      - name: mypy, the strict set (hard)
+        run: cd engine && mypy
+      - name: mypy, the whole package (report only until phase 5b)
+        continue-on-error: true
+        run: cd engine && mypy --follow-imports=normal src/reelline | tail -3
+
+  leak-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Leak guard (stdlib only, no install)
+        run: python engine/src/reelline/dev/leak_guard.py --root .
+
+  remotion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: engine/remotion
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engine/remotion/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      # The project builds with no channel present: @channel/... resolves to src/channel_default (the generic
+      # host, the engine's graphics data) when REELLINE_CHANNEL_DIR isn't set.
+      - name: Bundle with no channel
+        run: |
+          env -u REELLINE_CHANNEL_DIR npx remotion bundle src/index.ts --out-dir=../../out/default_bundle
+          test -s ../../out/default_bundle/index.html
+      # Smoke: bundles every composition (a bad import path fails here) and renders one frame of the Cover
+      # still with the example channel's background and fonts, the placeholder host drawn from its rig.
+      - name: Smoke (bundle)
+        run: npx remotion bundle src/index.ts --out-dir=../../out/smoke_bundle
+      - name: Smoke (example channel's cover)
+        run: |
+          A=../../channels/example/assets P=../../out/smoke_example_public
+          mkdir -p $P/fonts $P/backgrounds
+          cp $A/fonts/Fredoka-Variable.ttf $P/fonts/ && cp $A/backgrounds/studio.png $P/backgrounds/
+          REELLINE_CHANNEL_DIR=$PWD/../../channels/example npx remotion still Cover ../../out/smoke_example_cover.png \
+            --public-dir=$P --props='{"anchors":'"$(cat $A/anchors.json)"',"mood":"happy","background":"studio.png"}'
+          test -s ../../out/smoke_example_cover.png
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # Layers are cached in the Actions cache (the requirements and npm layers rebuild only when they change);
+      # nothing is pushed.
+      - name: Build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: reelline:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Size, and the image runs
+        run: |
+          docker image ls reelline:ci --format 'image {{.Repository}}:{{.Tag}} {{.Size}}' | tee -a "$GITHUB_STEP_SUMMARY"
+          docker run --rm -v "$PWD/channels/example:/channel" reelline:ci doctor --no-secrets
+          docker run --rm --entrypoint sh reelline:ci -c 'ffmpeg -version | head -1 && node --version && engine/tools/rhubarb/rhubarb --version'

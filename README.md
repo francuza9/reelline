@@ -35,6 +35,8 @@ reelline run --channel my-channel --dry-run        # the chain for the next slot
 
 `reelline init` also writes `.env.example`, so a fresh channel lists exactly the credentials its config needs. [docs/deployment.md](docs/deployment.md) has the Docker, systemd and cron setups.
 
+**Making a channel from your own site?** [docs/your-channel.md](docs/your-channel.md) walks through it: the minimum for a first reel, then what's optional (your own host, backgrounds, music, review, publishing).
+
 ## The chain
 
 The daily run is a list of steps in the channel's `config.yaml` (`pipeline:`). Each step declares the artifacts it needs and makes, and the loader refuses a chain where a step's input is not made by an earlier step. The default order:
@@ -64,7 +66,7 @@ One schema (`engine/src/reelline/config/schema/`) holds every setting with a gen
 
 ## Documentation
 
-[Architecture](docs/architecture.md) · [Configuration](docs/configuration.md) · [Steps](docs/steps.md) · [Providers](docs/providers.md) · [Review and notifications](docs/review-and-notify.md) · [Publishing and stats](docs/publishing.md) · [Languages](docs/languages.md) · [Rendering](docs/rendering.md) · [Fact-checking](docs/fact-checking.md) · [Deployment](docs/deployment.md) · [Costs](docs/costs.md)
+[Your own channel](docs/your-channel.md) · [Architecture](docs/architecture.md) · [Configuration](docs/configuration.md) · [Steps](docs/steps.md) · [Providers](docs/providers.md) · [Review and notifications](docs/review-and-notify.md) · [Publishing and stats](docs/publishing.md) · [Languages](docs/languages.md) · [Rendering](docs/rendering.md) · [Fact-checking](docs/fact-checking.md) · [Deployment](docs/deployment.md) · [Costs](docs/costs.md)
 
 See also [CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md), [CHANGELOG](CHANGELOG.md) and [THIRD_PARTY](THIRD_PARTY.md).
 

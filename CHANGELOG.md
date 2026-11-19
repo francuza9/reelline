@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+### Docs
+- `docs/your-channel.md`: a step-by-step guide to a channel from your own site, the minimum for a first reel and what is optional (own host, backgrounds, music, review, publishing), linked from the README.
+
 ## 0.1.0 (unreleased)
 
 The first open-source release of the engine, split out of a Georgian-language channel that ran as an experiment.
